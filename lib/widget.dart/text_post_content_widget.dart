@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class TextPostContentWidget extends StatelessWidget {
-  const TextPostContentWidget({super.key});
+  final double heights;
+  const TextPostContentWidget({super.key, required this.heights});
 
   @override
   Widget build(BuildContext context) {
@@ -12,9 +13,15 @@ class TextPostContentWidget extends StatelessWidget {
       children: [
         Expanded(
           child: SizedBox(
-            height: 270,
+            height: heights,
             child: Container(
-              color: couleureBleue,
+              decoration: BoxDecoration(
+                color: couleureBleue,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  bottomLeft: Radius.circular(24),
+                ),
+              ),
               child: Center(
                 child: TitreTextWidget(
                   texte: "content",
@@ -28,9 +35,15 @@ class TextPostContentWidget extends StatelessWidget {
         const Gap(2),
         Expanded(
           child: SizedBox(
-            height: 270,
+            height: heights,
             child: Container(
-              color: couleureRose,
+              decoration: BoxDecoration(
+                color: couleureRose,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(24),
+                  bottomRight: Radius.circular(24),
+                ),
+              ),
               child: Center(
                 child: TitreTextWidget(
                   texte: "content",

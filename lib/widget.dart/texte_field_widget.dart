@@ -1,4 +1,5 @@
 import 'package:avis/widget.dart/corps_text_widget.dart';
+import 'package:avis/widget.dart/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -15,7 +16,7 @@ class TexteFieldWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CorpsTextWidget(texte: label ?? ""),
+            TitreTextWidget(texte: label ?? ""),
             const Gap(8),
             TextField(
               decoration: InputDecoration(

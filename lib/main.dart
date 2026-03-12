@@ -1,4 +1,4 @@
-import 'package:avis/Screens/authentication_screen.dart';
+import 'package:avis/Screens/feed_screen.dart';
 import 'package:avis/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: backgroundCouleureBleue),
       ),
       debugShowCheckedModeBanner: false,
-      home: AuthenticationScreen(),
+      home: FeedScreen(),
     );
   }
 }

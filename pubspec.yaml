@@ -12,6 +12,7 @@ dependencies:
   font_awesome_flutter: ^11.0.0
   gap: ^3.0.1
   google_fonts: ^8.0.2
+  flutter_card_swiper: ^7.2.0
 
 dev_dependencies:
   flutter_test:
@@ -20,3 +21,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/

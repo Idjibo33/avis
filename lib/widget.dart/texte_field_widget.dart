@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class TexteFieldWidget extends StatelessWidget {
+  final int? lines;
   final String? label;
   final String hint;
-  const TexteFieldWidget({super.key, this.label, required this.hint});
+  const TexteFieldWidget({
+    super.key,
+    this.label,
+    required this.hint,
+    this.lines,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +25,8 @@ class TexteFieldWidget extends StatelessWidget {
             TitreTextWidget(texte: label ?? ""),
             const Gap(8),
             TextField(
+              minLines: lines,
+              maxLines: lines,
               decoration: InputDecoration(
                 hint: CorpsTextWidget(texte: hint),
                 filled: true,

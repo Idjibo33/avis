@@ -1,0 +1,29 @@
+import 'package:avis/Widget.dart/corps_text_widget.dart';
+import 'package:avis/Widget.dart/titre_text_widget.dart';
+import 'package:avis/Widget.dart/user_avatar_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+
+class HeaderCardWidget extends StatelessWidget {
+  const HeaderCardWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Row(
+        children: [
+          const UserAvatarWidget(radius: 24),
+          const Gap(8),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TitreTextWidget(texte: "Nom"),
+              CorpsTextWidget(texte: "il y'a 10 min"),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

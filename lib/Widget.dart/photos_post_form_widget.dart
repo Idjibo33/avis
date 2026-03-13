@@ -8,13 +8,15 @@ class PhotosPostFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final texteController = TextEditingController();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView(
         children: [
-          const TexteFieldWidget(
+          TexteFieldWidget(
             label: "Votre question",
             hint: 'Quel photos est approprié pour ...?',
+            controller: texteController,
           ),
           const ImageFieldWidget(label: "Option A"),
           const Divider(thickness: 2),

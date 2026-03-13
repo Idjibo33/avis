@@ -1,7 +1,7 @@
-import 'package:avis/widget.dart/photos_post_form_widget.dart';
-import 'package:avis/widget.dart/tab_bar_buton_widget.dart';
-import 'package:avis/widget.dart/texte_post_form_widget.dart';
-import 'package:avis/widget.dart/titre_text_widget.dart';
+import 'package:avis/Widget.dart/photos_post_form_widget.dart';
+import 'package:avis/Widget.dart/tab_bar_buton_widget.dart';
+import 'package:avis/Widget.dart/texte_post_form_widget.dart';
+import 'package:avis/Widget.dart/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

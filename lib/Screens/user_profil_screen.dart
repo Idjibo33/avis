@@ -1,8 +1,8 @@
-import 'package:avis/widget.dart/corps_text_widget.dart';
-import 'package:avis/widget.dart/mini_card_widget.dart';
-import 'package:avis/widget.dart/titre_text_widget.dart';
-import 'package:avis/widget.dart/user_avatar_widget.dart';
-import 'package:avis/widget.dart/user_statistics_widget.dart';
+import 'package:avis/Widget.dart/corps_text_widget.dart';
+import 'package:avis/Widget.dart/mini_card_widget.dart';
+import 'package:avis/Widget.dart/titre_text_widget.dart';
+import 'package:avis/Widget.dart/user_avatar_widget.dart';
+import 'package:avis/Widget.dart/user_statistics_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

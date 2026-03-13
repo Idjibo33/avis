@@ -1,6 +1,6 @@
-import 'package:avis/widget.dart/card_widget.dart';
-import 'package:avis/widget.dart/drawer_widget.dart';
-import 'package:avis/widget.dart/logo.dart';
+import 'package:avis/Widget.dart/card_widget.dart';
+import 'package:avis/Widget.dart/drawer_widget.dart';
+import 'package:avis/Widget.dart/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';

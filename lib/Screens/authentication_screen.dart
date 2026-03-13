@@ -1,7 +1,7 @@
-import 'package:avis/widget.dart/connexion_widget.dart';
-import 'package:avis/widget.dart/inscription_widget.dart';
-import 'package:avis/widget.dart/logo.dart';
-import 'package:avis/widget.dart/titre_text_widget.dart';
+import 'package:avis/Widget.dart/connexion_widget.dart';
+import 'package:avis/Widget.dart/inscription_widget.dart';
+import 'package:avis/Widget.dart/logo.dart';
+import 'package:avis/Widget.dart/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -15,19 +15,17 @@ class AuthenticationScreen extends StatelessWidget {
       length: 2,
       child: Scaffold(
         body: SafeArea(
-          child: ListView(
+          child: Column(
             children: [
-              const Gap(20),
               const Logo(size: 50),
-              const Gap(20),
+              const Gap(16),
               const TabBar(
                 tabs: [
                   Tab(child: TitreTextWidget(texte: "Connexion")),
                   Tab(child: TitreTextWidget(texte: "Inscription")),
                 ],
               ),
-              const SizedBox(
-                height: 550,
+              const Expanded(
                 child: TabBarView(
                   children: [ConnexionWidget(), InscriptionWidget()],
                 ),

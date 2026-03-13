@@ -7,22 +7,28 @@ class TextePostFormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final questionTexteController = TextEditingController();
+    final optionATexteController = TextEditingController();
+    final optionBTexteController = TextEditingController();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView(
         children: [
-          const TexteFieldWidget(
+          TexteFieldWidget(
+            controller: questionTexteController,
             label: "Votre question",
             hint: 'Quel photos est approprié pour ...?',
           ),
-          const TexteFieldWidget(
+          TexteFieldWidget(
+            controller: optionATexteController,
             lines: 7,
 
             label: "Option A",
             hint: "Expliquez votre concept en quelques mots",
           ),
           const Divider(thickness: 2),
-          const TexteFieldWidget(
+          TexteFieldWidget(
+            controller: optionBTexteController,
             lines: 7,
             label: "Option B",
             hint: "Expliquez votre concept en quelques mots",

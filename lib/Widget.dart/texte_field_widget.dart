@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class TexteFieldWidget extends StatelessWidget {
+  final TextEditingController controller;
   final int? lines;
   final String? label;
   final String hint;
@@ -12,6 +13,7 @@ class TexteFieldWidget extends StatelessWidget {
     this.label,
     required this.hint,
     this.lines,
+    required this.controller,
   });
 
   @override
@@ -25,6 +27,7 @@ class TexteFieldWidget extends StatelessWidget {
             TitreTextWidget(texte: label ?? ""),
             const Gap(8),
             TextField(
+              controller: controller,
               minLines: lines,
               maxLines: lines,
               decoration: InputDecoration(

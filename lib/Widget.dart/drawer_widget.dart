@@ -26,7 +26,8 @@ class DrawerWidget extends StatelessWidget {
                   leading: FaIcon(FontAwesomeIcons.user),
                   titre: "Profil",
                 ),
-                const ListTileWidget(
+                ListTileWidget(
+                  action: () => naviguerNewPostScreen(context),
                   leading: FaIcon(FontAwesomeIcons.plus),
                   titre: "Faire un post",
                 ),

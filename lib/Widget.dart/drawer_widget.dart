@@ -22,7 +22,8 @@ class DrawerWidget extends StatelessWidget {
               children: [
                 const Logo(size: 40),
                 const Gap(30),
-                const ListTileWidget(
+                ListTileWidget(
+                  action: () => naviguerProfilScreen(context),
                   leading: FaIcon(FontAwesomeIcons.user),
                   titre: "Profil",
                 ),

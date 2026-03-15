@@ -1,6 +1,9 @@
+import 'package:avis/Models/post.dart';
+import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Widget.dart/button_principale_widget.dart';
 import 'package:avis/Widget.dart/texte_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class TextePostFormWidget extends StatelessWidget {
   const TextePostFormWidget({super.key});
@@ -33,10 +36,25 @@ class TextePostFormWidget extends StatelessWidget {
             label: "Option B",
             hint: "Expliquez votre concept en quelques mots",
           ),
-          ButtonPrincipaleWidget(
-            texte: "Publiez",
-            action: () {},
-            chargement: false,
+          Consumer<PostTableProider>(
+            builder: (context, post, child) => ButtonPrincipaleWidget(
+              texte: "Publiez",
+              action: () async {
+                await post.addPost(
+                  post: Post(
+                    created_at: '',
+                    user: '',
+                    question: questionTexteController.text.trim(),
+                    type: "text",
+                    option_a_text: optionATexteController.text.trim(),
+                    option_a_url: "",
+                    option_b_text: optionBTexteController.text.trim(),
+                    option_b_url: "",
+                  ),
+                );
+              },
+              chargement: post.chargement,
+            ),
           ),
         ],
       ),

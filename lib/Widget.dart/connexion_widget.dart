@@ -19,42 +19,44 @@ class ConnexionWidget extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        children: [
-          TexteFieldWidget(
-            controller: emailController,
-            label: "Email",
-            hint: "ex",
-          ),
-          TexteFieldWidget(
-            controller: pwController,
-            label: "Mot de passe",
-            hint: "ex",
-          ),
-          const Gap(30),
-          Consumer<AuthServicesProviders>(
-            builder: (context, auth, child) => ButtonPrincipaleWidget(
-              texte: "Se connecter",
-              action: () async {
-                await auth.signInUser(
-                  email: emailController.text,
-                  password: pwController.text,
-                );
-                if (context.mounted) naviguerAuthGate(context);
-              },
-              chargement: auth.chargement,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TexteFieldWidget(
+              controller: emailController,
+              label: "Email",
+              hint: "ex",
             ),
-          ),
-          const Gap(20),
-          const CorpsTextWidget(texte: "Où connectez-vous avec"),
-          const Gap(20),
-          BoutonSecondaireWidget(
-            action: () {},
-            icone: FaIcon(FontAwesomeIcons.google),
-            texte: 'Google',
-            chargement: false,
-          ),
-        ],
+            TexteFieldWidget(
+              controller: pwController,
+              label: "Mot de passe",
+              hint: "ex",
+            ),
+            const Gap(30),
+            Consumer<AuthServicesProviders>(
+              builder: (context, auth, child) => ButtonPrincipaleWidget(
+                texte: "Se connecter",
+                action: () async {
+                  await auth.signInUser(
+                    email: emailController.text,
+                    password: pwController.text,
+                  );
+                  if (context.mounted) naviguerAuthGate(context);
+                },
+                chargement: auth.chargement,
+              ),
+            ),
+            const Gap(20),
+            const CorpsTextWidget(texte: "Où connectez-vous avec"),
+            const Gap(20),
+            BoutonSecondaireWidget(
+              action: () {},
+              icone: FaIcon(FontAwesomeIcons.google),
+              texte: 'Google',
+              chargement: false,
+            ),
+          ],
+        ),
       ),
     );
   }

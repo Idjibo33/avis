@@ -23,30 +23,26 @@ void naviguerAuthGate(BuildContext context) {
 
 void naviguerNewPostScreen(BuildContext context) {
   if (Platform.isIOS) {
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       CupertinoPageRoute(builder: (context) => NewPostScreen()),
-      (route) => false,
     );
   }
-  Navigator.pushAndRemoveUntil(
+  Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => NewPostScreen()),
-    (route) => false,
   );
 }
 
 void naviguerProfilScreen(BuildContext context) {
   if (Platform.isIOS) {
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       CupertinoPageRoute(builder: (context) => UserProfilScreen()),
-      (route) => false,
     );
   }
-  Navigator.pushAndRemoveUntil(
+  Navigator.push(
     context,
     MaterialPageRoute(builder: (context) => UserProfilScreen()),
-    (route) => false,
   );
 }

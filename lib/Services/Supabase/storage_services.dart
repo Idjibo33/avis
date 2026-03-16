@@ -7,8 +7,12 @@ class StorageServices implements DatabaseHelper<File> {
   final _supabase = Supabase.instance.client;
 
   @override
-  Future<String> addData(File item) {
-    return _supabase.storage.from('images').upload("images/", item);
+  Future<String> addData(File item) async {
+    final userId = Supabase.instance.client.auth.currentUser!.id;
+    final fileName = "${DateTime.now().millisecondsSinceEpoch}.jpb";
+    final path = "posts/$userId/$fileName";
+    await _supabase.storage.from('images').upload(path, item);
+    return _supabase.storage.from('images').getPublicUrl(path);
   }
 
   @override

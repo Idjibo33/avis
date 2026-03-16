@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:avis/Models/post.dart';
+import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Widget.dart/button_principale_widget.dart';
 import 'package:avis/Widget.dart/image_field_widget.dart';
 import 'package:avis/Widget.dart/texte_field_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PhotosPostFormWidget extends StatefulWidget {
   const PhotosPostFormWidget({super.key});
@@ -45,10 +48,18 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
               });
             },
           ),
-          ButtonPrincipaleWidget(
-            texte: "Publiez",
-            action: () {},
-            chargement: false,
+          Consumer<PostTableProider>(
+            builder: (context, post, child) => ButtonPrincipaleWidget(
+              texte: "Publiez",
+              action: () async {
+                await post.addPost(
+                  post: Post(question: texteController.text, type: "image"),
+                  optionA: optionAImage,
+                  optionB: optionBImage,
+                );
+              },
+              chargement: post.chargement,
+            ),
           ),
         ],
       ),

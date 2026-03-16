@@ -31,11 +31,15 @@ class CardWidget extends StatelessWidget {
 
             isTextPost
                 ? TextPostContentWidget(
-                    heights: 270,
+                    heights: 250,
                     optionA: post.option_a_text!,
                     optionB: post.option_b_text!,
                   )
-                : ImagePostContentWidget(heights: 270),
+                : ImagePostContentWidget(
+                    heights: 250,
+                    optionAUrl: post.option_a_url!,
+                    optionBUrl: post.option_b_url!,
+                  ),
             const Gap(4),
             const VoteDescriptionWidget(),
             const Gap(4),

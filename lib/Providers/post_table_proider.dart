@@ -13,7 +13,12 @@ class PostTableProider extends ChangeNotifier {
   String _message = "";
   Stream<List<Post>> get streamPosts => _postsTableServices.readData();
 
-  Future addPost({required Post post, File? optionA, File? optionB}) async {
+  Future addPost({
+    required Post post,
+    File? optionA,
+    File? optionB,
+    String? userId,
+  }) async {
     try {
       _chargement = true;
       notifyListeners();

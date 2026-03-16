@@ -14,7 +14,6 @@ class PostsTableServices implements DatabaseHelper<Post> {
       'option_b_text': item.option_b_text,
     };
     final imagePost = {
-      'created_at': item.created_at,
       'type': item.type,
       'question': item.question,
       'option_a_url': item.option_a_url,

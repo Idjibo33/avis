@@ -10,6 +10,10 @@ Avis est une application mobile interactive conçue pour faciliter la prise de d
 - **Real-time Updates :** Flux de données en direct.
 - **Sécurité Avancée :** Protection des données via des politiques RLS (Row Level Security) strictes.
 
+## Aperću
+
+<img src="assets/screenshots/accueil.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/drawer.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth1.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth2.png" width="250" alt="Capture d'écran">
+
 ## Stack technique
 - **Front-end :** Flutter
 - **Back-end :** Supabase(Auth, Storage)

@@ -1,3 +1,25 @@
-# avis
+# Avis
 
-A new Flutter project.
+Avis est une application mobile interactive conçue pour faciliter la prise de décision sociale à travers un système de "Swipe". Les utilisateurs peuvent poser des questions sous forme de duels (Texte vs Texte ou Image vs Image) et laisser la communauté voter via une interface intuitive inspirée de Tinder.
+
+## Fonctionnalités
+
+- **Authentification :** Creation de compte utilisateur et connexion au compte utilisateur
+- **Système de Swipe :** Votez sur des dilemmes en swipant des cartes interactives.
+- **Création de Posts :** Support des duels textuels et visuels avec upload d'images.
+- **Real-time Updates :** Flux de données en direct.
+- **Sécurité Avancée :** Protection des données via des politiques RLS (Row Level Security) strictes.
+
+## Stack technique
+- **Front-end :** Flutter
+- **Back-end :** Supabase(Auth, Storage)
+- **State management :** Provider
+
+## Architecture de la base de donnée 
+Le projet utilise une base de données relationnelle robuste avec des Vues SQL pour optimiser les performances de lecture et simplifier le mapping des données dans Flutter.
+- **Schema des tables :**
+**Profiles** Stockage des informations des utilisateurs.
+**posts** Contenu des duels (questions, options, auteur).
+
+## Prochaines étapes
+- Création de la table **Interactions** et implementation de la fonctionnalité d'interaction sur les posts pour enregistrer les votes.

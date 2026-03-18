@@ -1,4 +1,3 @@
-import 'package:avis/Helpers/interaction_table_helper.dart';
 import 'package:avis/Helpers/post_table_helper.dart';
 import 'package:avis/Models/post.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

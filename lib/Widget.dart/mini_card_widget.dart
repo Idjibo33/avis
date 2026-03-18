@@ -16,7 +16,7 @@ class MiniCardWidget extends StatelessWidget {
         ),
         child: Stack(
           alignment: AlignmentGeometry.bottomCenter,
-          children: [const PostReactionsWidget()],
+          // children: [const PostReactionsWidget()],
         ),
       ),
     );

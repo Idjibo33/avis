@@ -1,4 +1,5 @@
 import 'package:avis/Providers/auth_services_providers.dart';
+import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Providers/profile_table_provider.dart';
 import 'package:avis/auth_gate.dart';
@@ -20,6 +21,9 @@ void main() async {
         ChangeNotifierProvider(create: (context) => AuthServicesProviders()),
         ChangeNotifierProvider(create: (context) => ProfileTableProvider()),
         ChangeNotifierProvider(create: (context) => PostTableProider()),
+        ChangeNotifierProvider(
+          create: (context) => InteractionsServicesProvider(),
+        ),
       ],
       child: const MainApp(),
     ),

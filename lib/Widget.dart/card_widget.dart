@@ -43,7 +43,7 @@ class CardWidget extends StatelessWidget {
             const Gap(4),
             const VoteDescriptionWidget(),
             const Gap(4),
-            const PostReactionsWidget(),
+            PostReactionsWidget(postId: post.id!),
             const Gap(16),
           ],
         ),

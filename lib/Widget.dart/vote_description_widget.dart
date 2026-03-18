@@ -27,7 +27,7 @@ class VoteDescriptionWidget extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 4),
             child: const CorpsTextWidget(
-              texte: "Swipe à droite pour A",
+              texte: "Swipe à droite pour B",
               couleur: Colors.white,
             ),
           ),

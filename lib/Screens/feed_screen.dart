@@ -1,6 +1,11 @@
+import 'package:avis/Helpers/navigators.dart';
+import 'package:avis/Models/interaction.dart';
+import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
+import 'package:avis/Widget.dart/button_principale_widget.dart';
 import 'package:avis/Widget.dart/card_widget.dart';
 import 'package:avis/Widget.dart/drawer_widget.dart';
+import 'package:avis/Widget.dart/empty_list_card_widget.dart';
 import 'package:avis/Widget.dart/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -32,41 +37,57 @@ class FeedScreen extends StatelessWidget {
         builder: (context, posts, child) => StreamBuilder(
           stream: posts.streamPosts,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            }
             if (snapshot.hasData) {
               if (snapshot.data!.isEmpty || snapshot.data == null) {
-                return const Center(child: Text("Aucun post à afficher"));
-              }
-              return CardSwiper(
-                onSwipeDirectionChange:
-                    (horizontalDirection, verticalDirection) {
-                      if (horizontalDirection.angle == 90) {
-                        debugPrint(("Swipped right"));
+                return const EmptyListCardWidget();
+              } else {
+                return Consumer<InteractionsServicesProvider>(
+                  builder: (context, interaction, child) => CardSwiper(
+                    scale: 0.9,
+                    duration: Duration(milliseconds: 100),
+                    allowedSwipeDirection: AllowedSwipeDirection.symmetric(
+                      horizontal: true,
+                      vertical: false,
+                    ),
+                    cardBuilder:
+                        (
+                          context,
+                          cardIndex,
+                          horizontalOffsetPercentage,
+                          verticalOffsetPercentage,
+                        ) {
+                          return CardWidget(post: snapshot.data![cardIndex]);
+                        },
+                    cardsCount: snapshot.data!.length,
+                    numberOfCardsDisplayed: snapshot.data!.length,
+                    onSwipe: (previousIndex, currentIndex, direction) async {
+                      final swipedPost = snapshot.data![previousIndex];
+                      if (direction == CardSwiperDirection.right) {
+                        interaction.addInteraction(
+                          interaction: Interaction(
+                            choix: "B",
+                            postId: swipedPost.id,
+                          ),
+                        );
+                        return true;
                       }
-                      if (horizontalDirection.angle == 270) {
-                        debugPrint("Swipped left");
+                      if (direction == CardSwiperDirection.left) {
+                        interaction.addInteraction(
+                          interaction: Interaction(
+                            choix: "A",
+                            postId: swipedPost.id,
+                          ),
+                        );
+                        return true;
+                      } else {
+                        return false;
                       }
                     },
-                scale: 0.9,
-                duration: Duration(milliseconds: 100),
-                allowedSwipeDirection: AllowedSwipeDirection.symmetric(
-                  horizontal: true,
-                  vertical: false,
-                ),
-                cardBuilder:
-                    (
-                      context,
-                      index,
-                      horizontalOffsetPercentage,
-                      verticalOffsetPercentage,
-                    ) => CardWidget(post: snapshot.data![index]),
-                cardsCount: snapshot.data!.length,
-                numberOfCardsDisplayed: snapshot.data!.length,
-              );
+                  ),
+                );
+              }
             }
-            return Center(child: Text(snapshot.error.toString()));
+            return const Center(child: CircularProgressIndicator.adaptive());
           },
         ),
       ),

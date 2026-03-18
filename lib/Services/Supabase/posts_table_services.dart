@@ -1,8 +1,9 @@
-import 'package:avis/Helpers/database_helper.dart';
+import 'package:avis/Helpers/interaction_table_helper.dart';
+import 'package:avis/Helpers/post_table_helper.dart';
 import 'package:avis/Models/post.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class PostsTableServices implements DatabaseHelper<Post> {
+class PostsTableServices implements PostTableHelper<Post> {
   final _supabase = Supabase.instance.client;
   final String table = 'posts';
   @override
@@ -31,9 +32,7 @@ class PostsTableServices implements DatabaseHelper<Post> {
 
   @override
   Stream<List<Post>> readData() {
-    final resultat = _supabase
-        .from("post_with_author")
-        .stream(primaryKey: ['id']);
+    final resultat = _supabase.from("post_to_show").stream(primaryKey: ['id']);
     return resultat.map((event) => event.map((e) => Post.fromMap(e)).toList());
   }
 

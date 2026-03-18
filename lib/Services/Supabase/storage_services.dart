@@ -1,9 +1,10 @@
 import 'dart:io';
 
-import 'package:avis/Helpers/database_helper.dart';
+import 'package:avis/Helpers/interaction_table_helper.dart';
+import 'package:avis/Helpers/storage_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class StorageServices implements DatabaseHelper<File> {
+class StorageServices implements StorageHelper<File> {
   final _supabase = Supabase.instance.client;
 
   @override

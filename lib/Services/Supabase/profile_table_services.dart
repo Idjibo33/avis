@@ -1,8 +1,9 @@
-import 'package:avis/Helpers/database_helper.dart';
+import 'package:avis/Helpers/interaction_table_helper.dart';
+import 'package:avis/Helpers/profiles_table_helper.dart';
 import 'package:avis/Models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfileTableServices implements DatabaseHelper<Profile> {
+class ProfileTableServices implements ProfilesTableHelper<Profile> {
   final _supabase = Supabase.instance.client;
   final table = "profiles";
   @override

@@ -8,11 +8,12 @@ Avis est une application mobile interactive conçue pour faciliter la prise de d
 - **Système de Swipe :** Interaction sur les posts pour enregistrer les votes..
 - **Création de Posts :** Support des duels textuels et visuels avec upload d'images.
 - **Real-time Updates :** Flux de données en direct.
+- **Page de profil** : Affichage des posts et interactions de l'utilisateur sur la page de profil
 - **Sécurité Avancée :** Protection des données via des politiques RLS (Row Level Security) strictes.
 
 ## Aperću
 
-<img src="assets/screenshots/accueil.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/drawer.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth1.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth2.png" width="250" alt="Capture d'écran">
+<img src="assets/screenshots/accueil.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/drawer.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth1.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth2.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/profil.png" width="250" alt="Capture d'écran">
 
 ## Stack technique
 - **Front-end :** Flutter
@@ -27,5 +28,4 @@ Le projet utilise une base de données relationnelle robuste avec des Vues SQL p
 **interactions** Enregistrement des votes.
 
 ## Prochaines étapes
-- Affichage des posts utilisateurs sur la page de profil
 - Affichage des statistiques d'une post

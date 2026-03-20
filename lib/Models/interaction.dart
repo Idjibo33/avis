@@ -14,3 +14,16 @@ class Interaction {
     );
   }
 }
+
+class InteractionWithCount {
+  List<Interaction>? interactions;
+  int? count;
+  InteractionWithCount({this.interactions, this.count});
+  factory InteractionWithCount.fromMap(Map<String, dynamic> map) {
+    final List data = map['data'];
+    return InteractionWithCount(
+      interactions: data.map((e) => Interaction.fromMap(e)).toList(),
+      count: data.length,
+    );
+  }
+}

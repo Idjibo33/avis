@@ -14,7 +14,14 @@ class InteractionsServicesProvider extends ChangeNotifier {
     try {
       return await _interactions.readDataOnce(postId);
     } catch (e) {
-      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<InteractionWithCount>? readUserInteractions({required String userId}) {
+    try {
+      return _interactions.readUserData(userId);
+    } catch (e) {
       return null;
     }
   }

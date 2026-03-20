@@ -35,8 +35,16 @@ class InteractionsServices extends InteractionTableHelper<Interaction> {
   }
 
   @override
-  Stream<List<Interaction>> readData() {
-    // TODO: implement readData
-    throw UnimplementedError();
+  Future<InteractionWithCount> readUserData(userId) {
+    return _supabase
+        .from(table)
+        .select('id')
+        .eq('user', userId)
+        .withConverter(
+          (data) => InteractionWithCount.fromMap({
+            'data': data,
+            'count': data.length,
+          }),
+        );
   }
 }

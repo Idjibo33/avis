@@ -77,4 +77,15 @@ class PostTableProider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Stream<PostWithCount>? readUserPost({required String userId}) {
+    try {
+      return _postsTableServices.getUserPosts(userId);
+    } catch (e) {
+      _chargement = false;
+      _message = e.toString();
+      notifyListeners();
+      return null;
+    }
+  }
 }

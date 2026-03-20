@@ -1,4 +1,3 @@
-import 'package:avis/Helpers/interaction_table_helper.dart';
 import 'package:avis/Helpers/profiles_table_helper.dart';
 import 'package:avis/Models/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

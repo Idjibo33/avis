@@ -1,16 +1,21 @@
+import 'package:avis/Providers/profile_table_provider.dart';
 import 'package:avis/Widget.dart/corps_text_widget.dart';
-import 'package:avis/Widget.dart/mini_card_widget.dart';
 import 'package:avis/Widget.dart/titre_text_widget.dart';
 import 'package:avis/Widget.dart/user_avatar_widget.dart';
+import 'package:avis/Widget.dart/user_post_list_widget.dart';
 import 'package:avis/Widget.dart/user_statistics_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserProfilScreen extends StatelessWidget {
   const UserProfilScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = Supabase.instance.client.auth.currentUser;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -20,27 +25,72 @@ class UserProfilScreen extends StatelessWidget {
               SliverAppBar(
                 floating: true,
                 snap: true,
-                title: TitreTextWidget(
-                  texte: " @nom user",
-                  couleur: Colors.grey,
+                title: Consumer<ProfileTableProvider>(
+                  builder: (context, profile, child) => FutureBuilder(
+                    future: profile.readRow(id: user!.id),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return TitreTextWidget(
+                          texte: snapshot.data!.nom,
+                          couleur: Colors.grey,
+                        );
+                      } else {
+                        return const TitreTextWidget(
+                          texte: " @ Utilisateur",
+                          couleur: Colors.grey,
+                        );
+                      }
+                    },
+                  ),
                 ),
                 centerTitle: true,
               ),
               SliverToBoxAdapter(
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        const UserAvatarWidget(radius: 40),
-                        const Gap(8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const TitreTextWidget(texte: "Nom user"),
-                            const CorpsTextWidget(texte: "bio"),
-                          ],
-                        ),
-                      ],
+                    Consumer<ProfileTableProvider>(
+                      builder: (context, profile, child) => FutureBuilder(
+                        future: profile.readRow(id: user!.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return Row(
+                              children: [
+                                UserAvatarWidget(
+                                  radius: 40,
+                                  nom: snapshot.data!.nom,
+                                ),
+                                Gap(8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TitreTextWidget(
+                                      texte:
+                                          "${snapshot.data!.nom} ${snapshot.data!.prenom}",
+                                    ),
+
+                                    CorpsTextWidget(texte: "bio"),
+                                  ],
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const Row(
+                              children: [
+                                UserAvatarWidget(radius: 40, nom: 'U'),
+                                Gap(8),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TitreTextWidget(texte: "Utilisateur"),
+
+                                    CorpsTextWidget(texte: "bio"),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+                        },
+                      ),
                     ),
                     const Gap(12),
                     const UserStatisticsWidget(),
@@ -48,12 +98,7 @@ class UserProfilScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SliverGrid.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
-                itemBuilder: (context, index) => MiniCardWidget(),
-              ),
+              const UserPostListWidget(),
             ],
           ),
         ),

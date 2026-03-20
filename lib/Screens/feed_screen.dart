@@ -1,8 +1,6 @@
-import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Models/interaction.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
-import 'package:avis/Widget.dart/button_principale_widget.dart';
 import 'package:avis/Widget.dart/card_widget.dart';
 import 'package:avis/Widget.dart/drawer_widget.dart';
 import 'package:avis/Widget.dart/empty_list_card_widget.dart';

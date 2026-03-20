@@ -15,7 +15,7 @@ class HeaderCardWidget extends StatelessWidget {
       padding: const EdgeInsets.all(8),
       child: Row(
         children: [
-          const UserAvatarWidget(radius: 24),
+          UserAvatarWidget(radius: 24, nom: nom[0]),
           const Gap(8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

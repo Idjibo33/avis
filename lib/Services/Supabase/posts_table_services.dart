@@ -36,12 +36,6 @@ class PostsTableServices implements PostTableHelper<Post> {
   }
 
   @override
-  Future<dynamic> readDataOnce(String id) {
-    // TODO: implement readDataOnce
-    throw UnimplementedError();
-  }
-
-  @override
   Future<dynamic> updateData(Post item) {
     final textPost = {
       'created_at': item.created_at,
@@ -60,5 +54,16 @@ class PostsTableServices implements PostTableHelper<Post> {
     return _supabase
         .from(table)
         .update(item.type == "text" ? textPost : imagePost);
+  }
+
+  @override
+  Stream<PostWithCount> getUserPosts(String userId) {
+    final resultat = _supabase
+        .from(table)
+        .stream(primaryKey: ['id'])
+        .eq('user', userId);
+    return resultat.map(
+      (event) => PostWithCount.fromMap({'data': event, 'count': event.length}),
+    );
   }
 }

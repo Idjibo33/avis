@@ -50,17 +50,14 @@ class ProfileTableProvider extends ChangeNotifier {
     }
   }
 
-  Future readRow({required Profile item}) async {
+  Future<Profile>? readRow({required String id}) {
     try {
-      _chargement = true;
-      notifyListeners();
-      await _profileTableServices.readDataOnce(item.id!);
-      _chargement = false;
-      notifyListeners();
+      return _profileTableServices.readDataOnce(id);
     } catch (e) {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      return null;
     }
   }
 }

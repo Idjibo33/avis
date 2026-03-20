@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:avis/Helpers/interaction_table_helper.dart';
 import 'package:avis/Helpers/storage_helper.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -19,12 +17,6 @@ class StorageServices implements StorageHelper<File> {
   @override
   Future<dynamic> deletedata(File item) {
     // TODO: implement deletedata
-    throw UnimplementedError();
-  }
-
-  @override
-  Stream<List<File>> readData() {
-    // TODO: implement readData
     throw UnimplementedError();
   }
 

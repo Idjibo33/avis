@@ -1,3 +1,4 @@
+import 'package:avis/Widget.dart/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -17,11 +18,11 @@ class ImagePostContentWidget extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Image.network(optionAUrl, height: heights, fit: BoxFit.cover),
+          child: ImageWidget(url: optionAUrl, height: heights),
         ),
         const Gap(2),
         Expanded(
-          child: Image.network(optionBUrl, height: heights, fit: BoxFit.cover),
+          child: ImageWidget(url: optionBUrl, height: heights),
         ),
       ],
     );

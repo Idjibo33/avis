@@ -38,3 +38,16 @@ class Post {
     );
   }
 }
+
+class PostWithCount {
+  List<Post>? posts;
+  int? count;
+  PostWithCount({this.posts, this.count});
+  factory PostWithCount.fromMap(Map<String, dynamic> map) {
+    final List<dynamic> data = map['data'];
+    return PostWithCount(
+      posts: data.map((e) => Post.fromMap(e)).toList(),
+      count: data.length,
+    );
+  }
+}

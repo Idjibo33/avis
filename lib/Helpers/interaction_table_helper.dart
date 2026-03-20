@@ -3,5 +3,5 @@ abstract class InteractionTableHelper<T> {
   Future updateData(T item);
   Future deletedata(T item);
   Future readDataOnce(int postId);
-  Stream<List<T>> readData();
+  Future readUserData(String userId);
 }

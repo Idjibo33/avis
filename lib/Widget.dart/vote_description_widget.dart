@@ -14,7 +14,7 @@ class VoteDescriptionWidget extends StatelessWidget {
           color: backgroundCouleureBleue,
           elevation: 0,
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: const CorpsTextWidget(
               texte: "Swipe à gauche pour A",
               couleur: Colors.white,

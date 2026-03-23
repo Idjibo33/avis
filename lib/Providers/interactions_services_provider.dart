@@ -25,4 +25,28 @@ class InteractionsServicesProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  Future<double> optionAPourcentage(int postId) async {
+    List<Interaction> allInteractions = await _interactions.readDataOnce(
+      postId,
+    );
+    List<Interaction> optionA = [];
+    for (var i in allInteractions.where((element) => element.choix == "A")) {
+      optionA.add(i);
+    }
+    var resultat = (optionA.length / allInteractions.length) * 100;
+    return resultat;
+  }
+
+  Future<double> optionBPourcentage(int postId) async {
+    List<Interaction> allInteractions = await _interactions.readDataOnce(
+      postId,
+    );
+    List<Interaction> optionB = [];
+    for (var i in allInteractions.where((element) => element.choix == "B")) {
+      optionB.add(i);
+    }
+    var resultat = (optionB.length / allInteractions.length) * 100;
+    return resultat;
+  }
 }

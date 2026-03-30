@@ -41,7 +41,7 @@ class CardWidget extends StatelessWidget {
                     optionBUrl: post.option_b_url!,
                   ),
             const Gap(4),
-            // const VoteDescriptionWidget(),
+            const VoteDescriptionWidget(),
             const Gap(4),
             PostReactionsWidget(postId: post.id!),
             const Gap(16),

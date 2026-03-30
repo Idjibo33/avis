@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Models/profile.dart';
 import 'package:avis/Services/Supabase/profile_table_services.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class ProfileTableProvider extends ChangeNotifier {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      showError(_messageErreur);
     }
   }
 
@@ -57,6 +59,7 @@ class ProfileTableProvider extends ChangeNotifier {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      showError(_messageErreur);
       return null;
     }
   }

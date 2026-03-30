@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/responsiveness.dart';
 import 'package:avis/Providers/profile_table_provider.dart';
 import 'package:avis/Widget.dart/corps_text_widget.dart';
 import 'package:avis/Widget.dart/titre_text_widget.dart';
@@ -20,86 +21,90 @@ class UserProfilScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                floating: true,
-                snap: true,
-                title: Consumer<ProfileTableProvider>(
-                  builder: (context, profile, child) => FutureBuilder(
-                    future: profile.readRow(id: user!.id),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return TitreTextWidget(
-                          texte: snapshot.data!.nom,
-                          couleur: Colors.grey,
-                        );
-                      } else {
-                        return const TitreTextWidget(
-                          texte: " @ Utilisateur",
-                          couleur: Colors.grey,
-                        );
-                      }
-                    },
+          child: Responsiveness(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  floating: true,
+                  snap: true,
+                  title: Consumer<ProfileTableProvider>(
+                    builder: (context, profile, child) => FutureBuilder(
+                      future: profile.readRow(id: user!.id),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return TitreTextWidget(
+                            texte: snapshot.data!.nom,
+                            couleur: Colors.grey,
+                          );
+                        } else {
+                          return const TitreTextWidget(
+                            texte: " @ Utilisateur",
+                            couleur: Colors.grey,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  centerTitle: true,
+                ),
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      Consumer<ProfileTableProvider>(
+                        builder: (context, profile, child) => FutureBuilder(
+                          future: profile.readRow(id: user!.id),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Row(
+                                children: [
+                                  UserAvatarWidget(
+                                    radius: 40,
+                                    nom: snapshot.data!.nom,
+                                  ),
+                                  Gap(8),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TitreTextWidget(
+                                        texte:
+                                            "${snapshot.data!.nom} ${snapshot.data!.prenom}",
+                                      ),
+
+                                      CorpsTextWidget(texte: "bio"),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return const Row(
+                                children: [
+                                  UserAvatarWidget(radius: 40, nom: 'U'),
+                                  Gap(8),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TitreTextWidget(texte: "Utilisateur"),
+
+                                      CorpsTextWidget(texte: "bio"),
+                                    ],
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                      const Gap(12),
+                      const UserStatisticsWidget(),
+                      const Gap(12),
+                    ],
                   ),
                 ),
-                centerTitle: true,
-              ),
-              SliverToBoxAdapter(
-                child: Column(
-                  children: [
-                    Consumer<ProfileTableProvider>(
-                      builder: (context, profile, child) => FutureBuilder(
-                        future: profile.readRow(id: user!.id),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return Row(
-                              children: [
-                                UserAvatarWidget(
-                                  radius: 40,
-                                  nom: snapshot.data!.nom,
-                                ),
-                                Gap(8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TitreTextWidget(
-                                      texte:
-                                          "${snapshot.data!.nom} ${snapshot.data!.prenom}",
-                                    ),
-
-                                    CorpsTextWidget(texte: "bio"),
-                                  ],
-                                ),
-                              ],
-                            );
-                          } else {
-                            return const Row(
-                              children: [
-                                UserAvatarWidget(radius: 40, nom: 'U'),
-                                Gap(8),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TitreTextWidget(texte: "Utilisateur"),
-
-                                    CorpsTextWidget(texte: "bio"),
-                                  ],
-                                ),
-                              ],
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    const Gap(12),
-                    const UserStatisticsWidget(),
-                    const Gap(12),
-                  ],
-                ),
-              ),
-              const UserPostListWidget(),
-            ],
+                const UserPostListWidget(),
+              ],
+            ),
           ),
         ),
       ),

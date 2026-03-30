@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: messengerKey,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: backgroundCouleureBleue),
       ),

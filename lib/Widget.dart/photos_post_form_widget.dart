@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Widget.dart/button_principale_widget.dart';
@@ -16,19 +17,34 @@ class PhotosPostFormWidget extends StatefulWidget {
 }
 
 class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
+  final texteController = TextEditingController();
+
   File? optionAImage;
   File? optionBImage;
   @override
-  Widget build(BuildContext context) {
-    final texteController = TextEditingController();
+  void initState() {
+    optionAImage = null;
+    optionBImage = null;
+    // TODO: implement initState
+    super.initState();
+  }
 
+  @override
+  void dispose() {
+    texteController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView(
         children: [
           TexteFieldWidget(
             label: "Votre question",
-            hint: 'Quel photos est approprié pour ...?',
+            hint: 'Entrez la question de votre duel',
             controller: texteController,
           ),
           ImageFieldWidget(
@@ -52,11 +68,20 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
             builder: (context, post, child) => ButtonPrincipaleWidget(
               texte: "Publiez",
               action: () async {
-                await post.addPost(
-                  post: Post(question: texteController.text, type: "image"),
-                  optionA: optionAImage,
-                  optionB: optionBImage,
+                final validation = validateImagesDuel(
+                  texteController.text,
+                  optionAImage,
+                  optionBImage,
                 );
+
+                if (validation) {
+                  await post.addPost(
+                    post: Post(question: texteController.text, type: "image"),
+                    optionA: optionAImage,
+                    optionB: optionBImage,
+                  );
+                  initState();
+                }
               },
               chargement: post.chargement,
             ),

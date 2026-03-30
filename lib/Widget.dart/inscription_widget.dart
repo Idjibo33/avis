@@ -49,14 +49,16 @@ class InscriptionWidget extends StatelessWidget {
                 ButtonPrincipaleWidget(
                   texte: "Créer mon compte",
                   action: () async {
-                    await auth.createUser(
+                    final inscription = await auth.createUser(
                       nom: nomController.text,
                       prenom: prenomController.text,
                       email: emailController.text,
                       password: pwController.text,
                       confPassword: confPwController.text,
                     );
-                    if (context.mounted) naviguerAuthGate(context);
+                    if (inscription) {
+                      if (context.mounted) naviguerAuthGate(context);
+                    }
                   },
                   chargement: auth.chargement,
                 ),

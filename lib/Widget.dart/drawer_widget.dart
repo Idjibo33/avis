@@ -32,10 +32,10 @@ class DrawerWidget extends StatelessWidget {
                   leading: FaIcon(FontAwesomeIcons.plus),
                   titre: "Faire un post",
                 ),
-                const ListTileWidget(
-                  leading: FaIcon(FontAwesomeIcons.bell),
-                  titre: "Activités",
-                ),
+                // const ListTileWidget(
+                //   leading: FaIcon(FontAwesomeIcons.bell),
+                //   titre: "Activités",
+                // ),
               ],
             ),
             Consumer<AuthServicesProviders>(

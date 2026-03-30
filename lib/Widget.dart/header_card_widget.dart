@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/format_date.dart';
 import 'package:avis/Widget.dart/corps_text_widget.dart';
 import 'package:avis/Widget.dart/titre_text_widget.dart';
 import 'package:avis/Widget.dart/user_avatar_widget.dart';
@@ -21,7 +22,7 @@ class HeaderCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TitreTextWidget(texte: nom),
-              CorpsTextWidget(texte: date),
+              CorpsTextWidget(texte: formatDate(date)),
             ],
           ),
         ],

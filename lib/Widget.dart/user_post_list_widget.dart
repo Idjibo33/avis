@@ -1,5 +1,6 @@
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Services/Supabase/posts_table_services.dart';
+import 'package:avis/Widget.dart/empty_list_card_widget.dart';
 import 'package:avis/Widget.dart/mini_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,9 @@ class UserPostListWidget extends StatelessWidget {
         stream: PostsTableServices().getUserPosts(user!.id),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            if (snapshot.data!.count == 0) {
+              return const SliverToBoxAdapter(child: EmptyListCardWidget());
+            }
             return SliverGrid.builder(
               itemCount: snapshot.data!.count,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -26,14 +30,9 @@ class UserPostListWidget extends StatelessWidget {
               itemBuilder: (context, index) =>
                   MiniCardWidget(post: snapshot.data!.posts![index]),
             );
-          }
-          if (snapshot.hasError) {
-            return SliverToBoxAdapter(
-              child: Center(child: Text(snapshot.error.toString())),
-            );
           } else {
             return SliverToBoxAdapter(
-              child: Center(child: CircularProgressIndicator.adaptive()),
+              child: const Center(child: CircularProgressIndicator.adaptive()),
             );
           }
         },

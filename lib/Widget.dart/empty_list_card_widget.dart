@@ -12,9 +12,9 @@ class EmptyListCardWidget extends StatelessWidget {
         spacing: 12,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Aucun post à afficher"),
+          const Text("Aucun duel à afficher"),
           BoutonSecondaireWidget(
-            texte: "Créer un post",
+            texte: "Créer un duel",
             action: () => naviguerNewPostScreen(context),
             chargement: false,
           ),

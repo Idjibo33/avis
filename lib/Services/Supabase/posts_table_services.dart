@@ -29,7 +29,6 @@ class PostsTableServices implements PostTableHelper<Post> {
     return _supabase.from(table).delete().eq('id', item.id!);
   }
 
-  @override
   Stream<List<Post>> readData() {
     final resultat = _supabase.from("post_to_show").stream(primaryKey: ['id']);
     return resultat.map((event) => event.map((e) => Post.fromMap(e)).toList());

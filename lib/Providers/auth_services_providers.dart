@@ -1,3 +1,5 @@
+import 'package:avis/Helpers/snackbar.dart';
+import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/profile.dart';
 import 'package:avis/Services/Supabase/auth_services.dart';
 import 'package:avis/Services/Supabase/profile_table_services.dart';
@@ -11,21 +13,31 @@ class AuthServicesProviders extends ChangeNotifier {
   bool get chargement => _chargement;
   String _messageErreur = "";
 
-  Future signInUser({required String email, required String password}) async {
+  Future<bool> signInUser({
+    required String email,
+    required String password,
+  }) async {
     try {
-      _chargement = true;
-      notifyListeners();
-      await _authServices.signInUserWithEmail(email.trim(), password.trim());
-      _chargement = false;
-      notifyListeners();
+      final validation = validateConnexionForm(email, password);
+      if (validation) {
+        _chargement = true;
+        notifyListeners();
+        await _authServices.signInUserWithEmail(email.trim(), password.trim());
+        _chargement = false;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      showError(_messageErreur);
+      return false;
     }
   }
 
-  Future createUser({
+  Future<bool> createUser({
     required String nom,
     required String prenom,
     required String email,
@@ -33,39 +45,55 @@ class AuthServicesProviders extends ChangeNotifier {
     required String confPassword,
   }) async {
     try {
-      _chargement = true;
-      notifyListeners();
-      await _authServices
-          .createUserWithEmail(email.trim(), password.trim())
-          .then((value) async {
-            await _profileTableServices.addData(
-              Profile(
-                nom: nom.trim(),
-                prenom: prenom.trim(),
-                email: email.trim(),
-              ),
-            );
-          });
-      _chargement = false;
-      notifyListeners();
+      final validation = validateInscriptionForm(
+        nom,
+        prenom,
+        email,
+        password,
+        confPassword,
+      );
+      if (validation) {
+        _chargement = true;
+        notifyListeners();
+        await _authServices
+            .createUserWithEmail(email.trim(), password.trim())
+            .then((value) async {
+              await _profileTableServices.addData(
+                Profile(
+                  nom: nom.trim(),
+                  prenom: prenom.trim(),
+                  email: email.trim(),
+                ),
+              );
+            });
+        _chargement = false;
+        notifyListeners();
+        return true;
+      }
+      return false;
     } catch (e) {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      showError(_messageErreur);
+      return false;
     }
   }
 
-  Future signInAnonymeUser() async {
+  Future<bool> signInAnonymeUser() async {
     try {
       _chargement = true;
       notifyListeners();
       await _authServices.signInUserAnonynously();
       _chargement = false;
       notifyListeners();
+      return true;
     } catch (e) {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      showError(_messageErreur);
+      return false;
     }
   }
 
@@ -76,10 +104,12 @@ class AuthServicesProviders extends ChangeNotifier {
       await _authServices.signOut();
       _chargement = false;
       notifyListeners();
+      return true;
     } catch (e) {
       _chargement = false;
       _messageErreur = e.toString();
       notifyListeners();
+      return false;
     }
   }
 }

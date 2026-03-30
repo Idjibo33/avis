@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Widget.dart/button_principale_widget.dart';
@@ -13,6 +14,7 @@ class TextePostFormWidget extends StatelessWidget {
     final questionTexteController = TextEditingController();
     final optionATexteController = TextEditingController();
     final optionBTexteController = TextEditingController();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: ListView(
@@ -20,38 +22,48 @@ class TextePostFormWidget extends StatelessWidget {
           TexteFieldWidget(
             controller: questionTexteController,
             label: "Votre question",
-            hint: 'Quel photos est approprié pour ...?',
+            hint: 'Entrez la question de votre duel',
           ),
           TexteFieldWidget(
             controller: optionATexteController,
             lines: 7,
 
             label: "Option A",
-            hint: "Expliquez votre concept en quelques mots",
+            hint: "Entrez l'option A de votre duel",
           ),
           const Divider(thickness: 2),
           TexteFieldWidget(
             controller: optionBTexteController,
             lines: 7,
             label: "Option B",
-            hint: "Expliquez votre concept en quelques mots",
+            hint: "Entrez l'option B de votre duel",
           ),
           Consumer<PostTableProider>(
             builder: (context, post, child) => ButtonPrincipaleWidget(
               texte: "Publiez",
               action: () async {
-                await post.addPost(
-                  post: Post(
-                    created_at: '',
-                    user: '',
-                    question: questionTexteController.text.trim(),
-                    type: "text",
-                    option_a_text: optionATexteController.text.trim(),
-                    option_a_url: "",
-                    option_b_text: optionBTexteController.text.trim(),
-                    option_b_url: "",
-                  ),
+                final validation = validateIdeasDuel(
+                  questionTexteController.text,
+                  optionATexteController.text,
+                  optionBTexteController.text,
                 );
+                if (validation) {
+                  await post.addPost(
+                    post: Post(
+                      created_at: '',
+                      user: '',
+                      question: questionTexteController.text.trim(),
+                      type: "text",
+                      option_a_text: optionATexteController.text.trim(),
+                      option_a_url: "",
+                      option_b_text: optionBTexteController.text.trim(),
+                      option_b_url: "",
+                    ),
+                  );
+                  questionTexteController.clear();
+                  optionATexteController.clear();
+                  optionBTexteController.clear();
+                }
               },
               chargement: post.chargement,
             ),

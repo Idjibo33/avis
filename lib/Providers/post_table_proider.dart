@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Services/Supabase/posts_table_services.dart';
 import 'package:avis/Services/Supabase/storage_services.dart';
@@ -38,12 +39,14 @@ class PostTableProider extends ChangeNotifier {
       } else {
         await _postsTableServices.addData(post);
         _chargement = false;
-        _message = "Succès : Post ajouté";
+        _message = "Succès : Duel ajouté";
+        showSuccess(_message);
         notifyListeners();
       }
     } catch (e) {
       _chargement = false;
       _message = e.toString();
+      showError(_message);
       notifyListeners();
     }
   }

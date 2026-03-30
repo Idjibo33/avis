@@ -1,5 +1,7 @@
 # Avis
 
+[Live demo](https://avis-pp3j.vercel.app/)
+
 Avis est une application mobile interactive conçue pour faciliter la prise de décision sociale à travers un système de "Swipe". Les utilisateurs peuvent poser des questions sous forme de duels (Texte vs Texte ou Image vs Image) et laisser la communauté voter via une interface intuitive inspirée de Tinder.
 
 ## Fonctionnalités

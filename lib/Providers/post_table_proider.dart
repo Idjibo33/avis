@@ -35,6 +35,9 @@ class PostTableProider extends ChangeNotifier {
           ),
         );
         _chargement = false;
+        _message = "Succès : Duel ajouté";
+        showSuccess(_message);
+
         notifyListeners();
       } else {
         await _postsTableServices.addData(post);

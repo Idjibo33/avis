@@ -63,12 +63,12 @@ class InscriptionWidget extends StatelessWidget {
                   chargement: auth.chargement,
                 ),
 
-                const Gap(8),
-                BoutonSecondaireWidget(
-                  texte: "Continuer en tant qu'invité",
-                  action: () => auth.signInAnonymeUser(),
-                  chargement: auth.chargement,
-                ),
+                // const Gap(8),
+                // BoutonSecondaireWidget(
+                //   texte: "Continuer en tant qu'invité",
+                //   action: () => auth.signInAnonymeUser(),
+                //   chargement: auth.chargement,
+                // ),
               ],
             ),
           ),

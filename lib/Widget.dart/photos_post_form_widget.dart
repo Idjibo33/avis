@@ -80,7 +80,8 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
                     optionA: optionAImage,
                     optionB: optionBImage,
                   );
-                  initState();
+                  setState(() {});
+                  ();
                 }
               },
               chargement: post.chargement,

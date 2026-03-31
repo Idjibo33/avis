@@ -28,7 +28,7 @@ class MiniCardWidget extends StatelessWidget {
                     ? TextPostContentWidget(
                         heights: 150,
                         optionA: post.option_a_text!,
-                        optionB: post.option_a_text!,
+                        optionB: post.option_b_text!,
                       )
                     : ImagePostContentWidget(
                         heights: 150,

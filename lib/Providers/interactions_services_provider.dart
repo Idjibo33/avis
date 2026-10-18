@@ -7,7 +7,9 @@ class InteractionsServicesProvider extends ChangeNotifier {
   Future addInteraction({required Interaction interaction}) async {
     try {
       await _interactions.addData(interaction);
-    } catch (e) {}
+    } catch (e) {
+      debugPrint("Erreur lors de l'enregistrement de l'interaction : $e");
+    }
   }
 
   Future<List<Interaction>?> readInteractions({required int postId}) async {

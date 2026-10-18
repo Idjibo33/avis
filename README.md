@@ -1,34 +1,84 @@
 # Avis
 
+**Application mobile de vote social par swipe — Flutter + Supabase**
+
 [Live demo](https://avis-pp3j.vercel.app/)
 
-Avis est une application mobile interactive conçue pour faciliter la prise de décision sociale à travers un système de "Swipe". Les utilisateurs peuvent poser des questions sous forme de duels (Texte vs Texte ou Image vs Image) et laisser la communauté voter via une interface intuitive inspirée de Tinder.
+Avis est une application interactive conçue pour faciliter la prise de décision sociale. Les utilisateurs posent des questions sous forme de **duels** (texte contre texte, ou image contre image) et la communauté vote via une interface de swipe intuitive inspirée des applications de rencontre.
 
 ## Fonctionnalités
 
-- **Authentification :** Creation de compte utilisateur et connexion au compte utilisateur
-- **Système de Swipe :** Interaction sur les posts pour enregistrer les votes..
-- **Création de Posts :** Support des duels textuels et visuels avec upload d'images.
-- **Real-time Updates :** Flux de données en direct.
-- **Page de profil** : Affichage des posts et interactions de l'utilisateur sur la page de profil
-- **Sécurité Avancée :** Protection des données via des politiques RLS (Row Level Security) strictes.
-- **Statistiques d'un duel :** Affichage des resultat d'un duel
+- **Authentification :** création de compte et connexion (Supabase Auth).
+- **Création de duels :** questions textuelles ou visuelles (`image_picker` pour l'upload d'images).
+- **Système de swipe :** vote sur les duels (`flutter_card_swiper`), enregistrement des interactions.
+- **Flux temps réel :** affichage des posts et résultats mis à jour en direct (streams Supabase).
+- **Page de profil :** posts publiés et interactions de l'utilisateur.
+- **Statistiques d'un duel :** répartition des votes et résultat.
+- **Sécurité :** politiques RLS (Row Level Security) configurées côté Supabase.
 
-## Aperću
+## Aperçu
 
-<img src="assets/screenshots/accueil.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/drawer.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth1.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/auth2.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/profil.png" width="250" alt="Capture d'écran"> | <img src="assets/screenshots/resultat_duel.png" width="250" alt="Capture d'écran">
+| Accueil | Drawer | Auth | Auth | Profil | Résultat |
+|---|---|---|---|---|---|
+| <img src="assets/screenshots/accueil.png" width="150" alt="Accueil"> | <img src="assets/screenshots/drawer.png" width="150" alt="Drawer"> | <img src="assets/screenshots/auth1.png" width="150" alt="Authentification"> | <img src="assets/screenshots/auth2.png" width="150" alt="Inscription"> | <img src="assets/screenshots/profil.png" width="150" alt="Profil"> | <img src="assets/screenshots/resultat_duel.png" width="150" alt="Résultat d'un duel"> |
 
 ## Stack technique
-- **Front-end :** Flutter
-- **Back-end :** Supabase(Auth, Storage)
-- **State management :** Provider
 
-## Architecture de la base de donnée 
-Le projet utilise une base de données relationnelle robuste avec des Vues SQL pour optimiser les performances de lecture et simplifier le mapping des données dans Flutter.
-- **Schema des tables :**
-**Profiles** Stockage des informations des utilisateurs.
-**posts** Contenu des duels (questions, options, auteur).
-**interactions** Enregistrement des votes.
+| Domaine | Technologie |
+|---|---|
+| Framework | Flutter / Dart |
+| Backend | Supabase — Auth, PostgreSQL, Storage |
+| Gestion d'état | Provider (ChangeNotifier) |
+| UI | `flutter_card_swiper`, `google_fonts`, `font_awesome_flutter`, `gap` |
+| Configuration | `flutter_dotenv` (clés hors du dépôt) |
+
+## Architecture du projet
+
+```
+lib/
+├── main.dart                 # Point d'entrée (dotenv + Supabase.initialize)
+├── auth_gate.dart            # Redirection selon l'état de connexion
+├── Models/                   # Modèles de données (Post, Interaction, Profile)
+├── Services/Supabase/        # Accès aux tables et au storage Supabase
+├── Providers/                # État applicatif (Provider)
+├── Screens/                  # Écrans : feed, auth, nouveau post, profil, résultat
+├── Helpers/                  # Validation, navigation, formats, responsive
+└── Widget.dart/              # Widgets partagés
+```
+
+## Base de données (Supabase)
+
+| Objet | Rôle |
+|---|---|
+| `profiles` | Informations utilisateurs |
+| `posts` | Contenu des duels (question, options, auteur) |
+| `interactions` | Votes enregistrés |
+| Vue `post_to_show` | Lecture optimisée du feed (stream) |
+
+Les politiques RLS sont définies dans le dashboard Supabase (non versionnées dans ce dépôt).
+
+## Installation
+
+Prérequis : Flutter stable et un projet Supabase avec les tables ci-dessus.
+
+```bash
+flutter pub get
+
+# 1. Créer le fichier .env à la racine à partir du modèle
+cp .env.example .env
+#    puis renseigner URL et ANONKEY (Supabase > Project Settings > API)
+
+flutter run
+```
+
+> Le fichier `.env` est listé dans `pubspec.yaml` (assets) : l'application ne compile pas sans lui.
 
 ## Prochaines étapes
-- Modification du design de la page du feed
+
+- Nouveau design de la page feed.
+- Tests widget sur le flux de vote.
+- Versionnage du schéma SQL et des politiques RLS.
+
+## Licence
+
+[MIT](LICENSE)

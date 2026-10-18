@@ -1,6 +1,5 @@
 import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
-import 'package:avis/Widget.dart/bouton_secondaire_widget.dart';
 import 'package:avis/Widget.dart/button_principale_widget.dart';
 import 'package:avis/Widget.dart/texte_field_widget.dart';
 import 'package:flutter/material.dart';

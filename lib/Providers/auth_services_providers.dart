@@ -6,8 +6,16 @@ import 'package:avis/Services/Supabase/profile_table_services.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthServicesProviders extends ChangeNotifier {
-  final AuthServices _authServices = AuthServices();
-  final ProfileTableServices _profileTableServices = ProfileTableServices();
+  final AuthServices _authServices;
+  final ProfileTableServices _profileTableServices;
+
+  AuthServicesProviders({
+    AuthServices? authServices,
+    ProfileTableServices? profileTableServices,
+  })  : _authServices = authServices ?? AuthServices(),
+        _profileTableServices =
+            profileTableServices ?? ProfileTableServices();
+
   AuthServices get authServices => _authServices;
   bool _chargement = false;
   bool get chargement => _chargement;

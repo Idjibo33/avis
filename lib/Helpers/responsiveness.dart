@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 
 class Responsiveness extends StatelessWidget {
+  static const double maxWidth = 600;
+
   final Widget child;
   const Responsiveness({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) => Center(
-        child: FractionallySizedBox(
-          widthFactor: constraints.maxWidth < 500 ? 1 : 0.5,
-          child: child,
-        ),
-      ),
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth < maxWidth
+            ? constraints.maxWidth
+            : maxWidth;
+        return Center(
+          child: SizedBox(width: width, child: child),
+        );
+      },
     );
   }
 }

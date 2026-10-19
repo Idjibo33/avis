@@ -5,25 +5,18 @@ import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Providers/profile_table_provider.dart';
 import 'package:avis/auth_gate.dart';
 import 'package:avis/constants.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
-  if (kIsWeb) {
-    await Supabase.initialize(
-      url: const String.fromEnvironment('URL'),
-      anonKey: const String.fromEnvironment('ANONKEY'),
-    );
-  } else {
-    await dotenv.load(fileName: '.env');
-    await Supabase.initialize(
-      url: dotenv.env['URL'] ?? '',
-      anonKey: dotenv.env['ANONKEY'] ?? '',
-    );
-  }
+// Les clés sont fournies au build, jamais commitées :
+// flutter run --dart-define-from-file=.env
+// flutter build web --dart-define=URL=... --dart-define=ANONKEY=...
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  const String url = String.fromEnvironment('URL');
+  const String anonKey = String.fromEnvironment('ANONKEY');
+  await Supabase.initialize(url: url, anonKey: anonKey);
   runApp(
     MultiProvider(
       providers: [
@@ -50,7 +43,7 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: backgroundCouleureBleue),
       ),
       debugShowCheckedModeBanner: false,
-      home: AuthGate(),
+      home: const AuthGate(),
     );
   }
 }

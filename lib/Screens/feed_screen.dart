@@ -3,10 +3,10 @@ import 'package:avis/Models/interaction.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
-import 'package:avis/Widget.dart/card_widget.dart';
-import 'package:avis/Widget.dart/drawer_widget.dart';
-import 'package:avis/Widget.dart/empty_list_card_widget.dart';
-import 'package:avis/Widget.dart/logo.dart';
+import 'package:avis/widgets/card_widget.dart';
+import 'package:avis/widgets/drawer_widget.dart';
+import 'package:avis/widgets/empty_list_card_widget.dart';
+import 'package:avis/widgets/logo.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
@@ -20,12 +20,8 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  List<int>? interactedDuals;
-  @override
-  void initState() {
-    super.initState();
-    interactedDuals = [];
-  }
+  final List<int> interactedDuals = [];
+  int tentative = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +29,7 @@ class _FeedScreenState extends State<FeedScreen> {
       drawer: const Drawer(child: DrawerWidget()),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Logo(size: 28),
+        title: const Logo(size: 28),
         actions: [
           Builder(
             builder: (context) => GestureDetector(
@@ -48,21 +44,38 @@ class _FeedScreenState extends State<FeedScreen> {
       body: Responsiveness(
         child: Consumer<PostTableProider>(
           builder: (context, posts, child) => StreamBuilder(
+            key: ValueKey(tentative),
             stream: posts.streamPosts,
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 12,
+                    children: [
+                      const Text("Impossible de charger le feed"),
+                      TextButton(
+                        onPressed: () => setState(() {
+                          tentative++;
+                        }),
+                        child: const Text("Réessayer"),
+                      ),
+                    ],
+                  ),
+                );
+              }
               if (snapshot.hasData) {
                 final List<Post> dualsVisible = snapshot.data!
-                    .where((element) => !interactedDuals!.contains(element.id!))
+                    .where((element) => !interactedDuals.contains(element.id))
                     .toList();
-                if (snapshot.data!.isEmpty ||
-                    snapshot.data == null ||
-                    dualsVisible.isEmpty) {
+                if (dualsVisible.isEmpty) {
                   return const EmptyListCardWidget();
                 } else {
                   return Consumer<InteractionsServicesProvider>(
                     builder: (context, interaction, child) => CardSwiper(
                       scale: 0.9,
-                      duration: Duration(milliseconds: 100),
+                      duration: const Duration(milliseconds: 100),
+                      isLoop: false,
                       allowedSwipeDirection: AllowedSwipeDirection.symmetric(
                         horizontal: true,
                         vertical: false,
@@ -77,7 +90,9 @@ class _FeedScreenState extends State<FeedScreen> {
                             return CardWidget(post: dualsVisible[cardIndex]);
                           },
                       cardsCount: dualsVisible.length,
-                      numberOfCardsDisplayed: dualsVisible.length,
+                      numberOfCardsDisplayed: dualsVisible.length > 2
+                          ? 2
+                          : dualsVisible.length,
                       onSwipe: (previousIndex, currentIndex, direction) async {
                         final swipedPost = dualsVisible[previousIndex];
                         if (direction == CardSwiperDirection.right) {
@@ -88,7 +103,7 @@ class _FeedScreenState extends State<FeedScreen> {
                             ),
                           );
                           setState(() {
-                            interactedDuals!.add(swipedPost.id!);
+                            interactedDuals.add(swipedPost.id ?? 0);
                           });
                           return true;
                         }
@@ -100,7 +115,7 @@ class _FeedScreenState extends State<FeedScreen> {
                             ),
                           );
                           setState(() {
-                            interactedDuals!.add(swipedPost.id!);
+                            interactedDuals.add(swipedPost.id ?? 0);
                           });
                           return true;
                         } else {

@@ -1,21 +1,22 @@
-import 'dart:io';
 import 'package:avis/Helpers/storage_helper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class StorageServices implements StorageHelper<File> {
+class StorageServices implements StorageHelper<XFile> {
   final _supabase = Supabase.instance.client;
 
   @override
-  Future<String> addData(File item) async {
+  Future<String> addData(XFile item) async {
     final userId = Supabase.instance.client.auth.currentUser!.id;
-    final fileName = "${DateTime.now().millisecondsSinceEpoch}.jpb";
+    final fileName = "${DateTime.now().millisecondsSinceEpoch}.jpg";
     final path = "posts/$userId/$fileName";
-    await _supabase.storage.from('images').upload(path, item);
+    final bytes = await item.readAsBytes();
+    await _supabase.storage.from('images').uploadBinary(path, bytes);
     return _supabase.storage.from('images').getPublicUrl(path);
   }
 
   @override
-  Future<dynamic> deletedata(File item) {
+  Future<dynamic> deletedata(XFile item) {
     // TODO: implement deletedata
     throw UnimplementedError();
   }
@@ -27,7 +28,7 @@ class StorageServices implements StorageHelper<File> {
   }
 
   @override
-  Future<dynamic> updateData(File item) {
+  Future<dynamic> updateData(XFile item) {
     // TODO: implement updateData
     throw UnimplementedError();
   }

@@ -1,8 +1,8 @@
 import 'package:avis/Helpers/responsiveness.dart';
-import 'package:avis/Widget.dart/connexion_widget.dart';
-import 'package:avis/Widget.dart/inscription_widget.dart';
-import 'package:avis/Widget.dart/logo.dart';
-import 'package:avis/Widget.dart/titre_text_widget.dart';
+import 'package:avis/widgets/connexion_widget.dart';
+import 'package:avis/widgets/inscription_widget.dart';
+import 'package:avis/widgets/logo.dart';
+import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 

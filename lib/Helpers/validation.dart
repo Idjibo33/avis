@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:avis/Helpers/snackbar.dart';
+import 'package:image_picker/image_picker.dart';
 
 bool validateInscriptionForm(
   String nom,
@@ -44,7 +43,7 @@ bool validateIdeasDuel(String question, String optionA, String optionB) {
   return true;
 }
 
-bool validateImagesDuel(String question, File? optionA, File? optionB) {
+bool validateImagesDuel(String question, XFile? optionA, XFile? optionB) {
   if (question.isEmpty || optionA == null || optionB == null) {
     showError("Toutes les cases sont obligatoires");
     return false;

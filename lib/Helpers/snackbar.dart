@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final messengerKey = GlobalKey<ScaffoldMessengerState>();
 void showSuccess(String message) {
-  messengerKey.currentState!.showSnackBar(
+  messengerKey.currentState?.showSnackBar(
     SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,
@@ -12,7 +12,7 @@ void showSuccess(String message) {
 }
 
 void showError(String message) {
-  messengerKey.currentState!.showSnackBar(
+  messengerKey.currentState?.showSnackBar(
     SnackBar(
       content: Text(message),
       behavior: SnackBarBehavior.floating,

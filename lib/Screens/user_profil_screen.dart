@@ -1,10 +1,9 @@
 import 'package:avis/Helpers/responsiveness.dart';
 import 'package:avis/Providers/profile_table_provider.dart';
-import 'package:avis/Widget.dart/corps_text_widget.dart';
-import 'package:avis/Widget.dart/titre_text_widget.dart';
-import 'package:avis/Widget.dart/user_avatar_widget.dart';
-import 'package:avis/Widget.dart/user_post_list_widget.dart';
-import 'package:avis/Widget.dart/user_statistics_widget.dart';
+import 'package:avis/widgets/profile_header_widget.dart';
+import 'package:avis/widgets/titre_text_widget.dart';
+import 'package:avis/widgets/user_post_list_widget.dart';
+import 'package:avis/widgets/user_statistics_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -29,9 +28,11 @@ class UserProfilScreen extends StatelessWidget {
                   snap: true,
                   title: Consumer<ProfileTableProvider>(
                     builder: (context, profile, child) => FutureBuilder(
-                      future: profile.readRow(id: user!.id),
+                      future: user == null
+                          ? Future.value(null)
+                          : profile.readRow(id: user.id),
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
+                        if (snapshot.hasData && snapshot.data != null) {
                           return TitreTextWidget(
                             texte: snapshot.data!.nom,
                             couleur: Colors.grey,
@@ -52,47 +53,20 @@ class UserProfilScreen extends StatelessWidget {
                     children: [
                       Consumer<ProfileTableProvider>(
                         builder: (context, profile, child) => FutureBuilder(
-                          future: profile.readRow(id: user!.id),
+                          future: user == null
+                              ? Future.value(null)
+                              : profile.readRow(id: user.id),
                           builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Row(
-                                children: [
-                                  UserAvatarWidget(
-                                    radius: 40,
-                                    nom: snapshot.data!.nom,
-                                  ),
-                                  Gap(8),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      TitreTextWidget(
-                                        texte:
-                                            "${snapshot.data!.nom} ${snapshot.data!.prenom}",
-                                      ),
-
-                                      CorpsTextWidget(texte: "bio"),
-                                    ],
-                                  ),
-                                ],
-                              );
-                            } else {
-                              return const Row(
-                                children: [
-                                  UserAvatarWidget(radius: 40, nom: 'U'),
-                                  Gap(8),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      TitreTextWidget(texte: "Utilisateur"),
-
-                                      CorpsTextWidget(texte: "bio"),
-                                    ],
-                                  ),
-                                ],
+                            if (snapshot.hasData && snapshot.data != null) {
+                              return ProfileHeaderWidget(
+                                nom: snapshot.data!.nom,
+                                prenom: snapshot.data!.prenom,
                               );
                             }
+                            return const ProfileHeaderWidget(
+                              nom: '',
+                              prenom: '',
+                            );
                           },
                         ),
                       ),

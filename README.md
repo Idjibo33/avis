@@ -30,20 +30,20 @@ Avis est une application interactive conçue pour faciliter la prise de décisio
 | Backend | Supabase — Auth, PostgreSQL, Storage |
 | Gestion d'état | Provider (ChangeNotifier) |
 | UI | `flutter_card_swiper`, `google_fonts`, `font_awesome_flutter`, `gap` |
-| Configuration | `flutter_dotenv` (clés hors du dépôt) |
+| Configuration | Clés injectées au build via `--dart-define` (jamais commitées) |
 
 ## Architecture du projet
 
 ```
 lib/
-├── main.dart                 # Point d'entrée (dotenv + Supabase.initialize)
+├── main.dart                 # Point d'entrée (injection des clés + Supabase.initialize)
 ├── auth_gate.dart            # Redirection selon l'état de connexion
 ├── Models/                   # Modèles de données (Post, Interaction, Profile)
 ├── Services/Supabase/        # Accès aux tables et au storage Supabase
 ├── Providers/                # État applicatif (Provider)
 ├── Screens/                  # Écrans : feed, auth, nouveau post, profil, résultat
 ├── Helpers/                  # Validation, navigation, formats, responsive
-└── Widget.dart/              # Widgets partagés
+└── widgets/                  # Widgets partagés
 ```
 
 ## Base de données (Supabase)
@@ -68,15 +68,31 @@ flutter pub get
 cp .env.example .env
 #    puis renseigner URL et ANONKEY (Supabase > Project Settings > API)
 
-flutter run
+# 2. Lancer l'application en injectant les clés au build
+flutter run --dart-define-from-file=.env
+
+# Variante build web
+flutter build web --dart-define=URL=<url> --dart-define=ANONKEY=<anonkey>
 ```
 
-> Le fichier `.env` est listé dans `pubspec.yaml` (assets) : l'application ne compile pas sans lui.
+> Les clés sont lues avec `String.fromEnvironment` : aucun fichier de secrets n'est embarqué
+> ni listé dans `pubspec.yaml`. Sans `--dart-define`, l'application compile mais ne peut pas
+> joindre Supabase.
+
+## Tests
+
+```bash
+flutter analyze
+flutter test
+```
+
+Les tests couvrent les helpers (validation, pourcentage, format de date), les providers
+(interactions) et les widgets/écrans principaux (auth, feed, résultat de duel, responsive).
 
 ## Prochaines étapes
 
 - Nouveau design de la page feed.
-- Tests widget sur le flux de vote.
+- Tests widget de bout en bout sur le flux de vote.
 - Versionnage du schéma SQL et des politiques RLS.
 
 ## Licence

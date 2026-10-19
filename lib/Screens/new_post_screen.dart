@@ -1,8 +1,8 @@
 import 'package:avis/Helpers/responsiveness.dart';
-import 'package:avis/Widget.dart/photos_post_form_widget.dart';
-import 'package:avis/Widget.dart/tab_bar_buton_widget.dart';
-import 'package:avis/Widget.dart/texte_post_form_widget.dart';
-import 'package:avis/Widget.dart/titre_text_widget.dart';
+import 'package:avis/widgets/photos_post_form_widget.dart';
+import 'package:avis/widgets/tab_bar_buton_widget.dart';
+import 'package:avis/widgets/texte_post_form_widget.dart';
+import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

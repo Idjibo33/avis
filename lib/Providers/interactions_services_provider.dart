@@ -1,9 +1,14 @@
+import 'package:avis/Helpers/pourcentage.dart';
 import 'package:avis/Models/interaction.dart';
 import 'package:avis/Services/Supabase/interactions_services.dart';
 import 'package:flutter/material.dart';
 
 class InteractionsServicesProvider extends ChangeNotifier {
-  final InteractionsServices _interactions = InteractionsServices();
+  final InteractionsServices _interactions;
+
+  InteractionsServicesProvider({InteractionsServices? interactions})
+      : _interactions = interactions ?? InteractionsServices();
+
   Future addInteraction({required Interaction interaction}) async {
     try {
       await _interactions.addData(interaction);
@@ -20,7 +25,9 @@ class InteractionsServicesProvider extends ChangeNotifier {
     }
   }
 
-  Future<InteractionWithCount>? readUserInteractions({required String userId}) {
+  Future<InteractionWithCount>? readUserInteractions({
+    required String userId,
+  }) {
     try {
       return _interactions.readUserData(userId);
     } catch (e) {
@@ -29,26 +36,22 @@ class InteractionsServicesProvider extends ChangeNotifier {
   }
 
   Future<double> optionAPourcentage(int postId) async {
-    List<Interaction> allInteractions = await _interactions.readDataOnce(
+    final List<Interaction> allInteractions = await _interactions.readDataOnce(
       postId,
     );
-    List<Interaction> optionA = [];
-    for (var i in allInteractions.where((element) => element.choix == "A")) {
-      optionA.add(i);
-    }
-    var resultat = (optionA.length / allInteractions.length) * 100;
-    return resultat;
+    final int optionA = allInteractions
+        .where((element) => element.choix == "A")
+        .length;
+    return calculerPourcentage(optionA, allInteractions.length);
   }
 
   Future<double> optionBPourcentage(int postId) async {
-    List<Interaction> allInteractions = await _interactions.readDataOnce(
+    final List<Interaction> allInteractions = await _interactions.readDataOnce(
       postId,
     );
-    List<Interaction> optionB = [];
-    for (var i in allInteractions.where((element) => element.choix == "B")) {
-      optionB.add(i);
-    }
-    var resultat = (optionB.length / allInteractions.length) * 100;
-    return resultat;
+    final int optionB = allInteractions
+        .where((element) => element.choix == "B")
+        .length;
+    return calculerPourcentage(optionB, allInteractions.length);
   }
 }

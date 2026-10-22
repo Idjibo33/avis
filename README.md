@@ -4,6 +4,8 @@
 
 [Live demo](https://avis-pp3j.vercel.app/)
 
+[![Flutter CI](https://github.com/Idjibo33/avis/actions/workflows/flutter.yml/badge.svg?branch=main)](https://github.com/Idjibo33/avis/actions/workflows/flutter.yml)
+
 Avis est une application interactive conçue pour faciliter la prise de décision sociale. Les utilisateurs posent des questions sous forme de **duels** (texte contre texte, ou image contre image) et la communauté vote via une interface de swipe intuitive inspirée des applications de rencontre.
 
 ## Fonctionnalités

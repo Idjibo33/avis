@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class Post {
   final int? id;
   final String? created_at;

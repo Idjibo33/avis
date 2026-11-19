@@ -8,7 +8,7 @@
 
 ## Vérifications
 
-- Ordre CI (`.github/workflows/flutter.yml`) : `flutter pub get` → `flutter analyze` → `flutter test` → `flutter build web --release`.
+- Ordre CI (`.github/workflows/flutter.yml`) : `flutter pub get` → `flutter analyze --no-fatal-infos` (racine, `serverpod/**` exclu) + `dart pub get` / `dart analyze` dans `serverpod/` → `flutter test` → `flutter build web --release`.
 - Test ciblé : `flutter test test/helpers/validation_test.dart` ; un cas précis : `flutter test --plain-name "nom du test"`.
 - `flutter test` passe localement (72 tests / 22 fichiers), sans service externe.
 - Avec le Flutter 3.50 installé ici, `dart analyze lib test` remonte 63 infos `deprecated_member_use` (`package:flutter/material.dart` → `package:material_ui/material_ui.dart`) mais **sort en code 0** ; `flutter analyze` remonte les mêmes infos et **sort en code 1** : dérive de toolchain, pas une régression à corriger en urgence. Le workspace `serverpod/` a été renommé `avis_workspace` pour ne plus ajouter d'info `package_names`. Le CI utilise `channel: stable` sans version épinglée.

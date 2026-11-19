@@ -16,6 +16,13 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter analyze
+      # Flutter 3.50 rend `material.dart` obsolète : les 63 infos ne doivent pas
+      # faire échouer la CI ; le backend est analysé avec son propre workspace.
+      - run: flutter analyze --no-fatal-infos
+      - name: Analyse du backend Serverpod
+        working-directory: serverpod
+        run: |
+          dart pub get
+          dart analyze
       - run: flutter test
       - run: flutter build web --release

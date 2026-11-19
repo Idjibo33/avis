@@ -16,7 +16,13 @@ Future<bool> demanderElevation(
   BuildContext context, {
   Future<void> Function()? action,
 }) async {
-  final AuthServicesProviders auth = context.read<AuthServicesProviders>();
+  // AuthServicesProviders vit au-dessus du Navigator : un appel sans ce
+  // provider est une erreur de câblage, jamais une action à exécuter à blanc.
+  final AuthServicesProviders? auth = _lire<AuthServicesProviders>(context);
+  if (auth == null) {
+    _signalerIndisponible(context);
+    return false;
+  }
   final AuthSessionStatus statut = auth.current.status;
 
   if (statut == AuthSessionStatus.authenticated) {
@@ -29,17 +35,41 @@ Future<bool> demanderElevation(
       (statut == AuthSessionStatus.failed && auth.current.authUserId != null);
   if (!estInvite) return false;
 
-  final AuthElevationController elevation = context
-      .read<AuthElevationController>();
-  elevation.demander(action: action);
+  // AuthGate porte le contrôleur dans la route d'accueil. Une route poussée
+  // (Nouveau duel) n'hérite pas de ce provider : on utilise alors un
+  // contrôleur éphémère, limité à cet appel. L'état d'auth reste l'unique
+  // source de vérité dans AuthServicesProviders.
+  final AuthElevationController? fourni = _lire<AuthElevationController>(
+    context,
+  );
+  final AuthElevationController elevation = fourni ?? AuthElevationController();
+  try {
+    elevation.demander(action: action);
 
-  final bool reussi = await AuthenticationScreen.ouvrir(context);
-  if (reussi) {
-    await elevation.reprendre();
-  } else {
-    elevation.annuler();
+    final bool reussi = await AuthenticationScreen.ouvrir(context);
+    if (reussi) {
+      await elevation.reprendre();
+    } else {
+      elevation.annuler();
+    }
+    return reussi;
+  } finally {
+    if (fourni == null) elevation.dispose();
   }
-  return reussi;
+}
+
+T? _lire<T extends Object>(BuildContext context) {
+  try {
+    return context.read<T>();
+  } on ProviderNotFoundException {
+    return null;
+  }
+}
+
+void _signalerIndisponible(BuildContext context) {
+  ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+    const SnackBar(content: Text('Action indisponible pour le moment.')),
+  );
 }
 
 void naviguerNewPostScreen(BuildContext context) {

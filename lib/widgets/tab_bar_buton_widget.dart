@@ -17,7 +17,15 @@ class TabBarButonWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(width: 18, height: 18, child: FittedBox(child: icone)),
-        TitreTextWidget(texte: texte, fontSize: 14),
+        // Un libellé long ne doit pas pousser l'onglet hors du TabBar.
+        Flexible(
+          child: TitreTextWidget(
+            texte: texte,
+            fontSize: 14,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

@@ -22,14 +22,22 @@ class ImagePostContentWidget extends StatelessWidget {
         Expanded(
           child: ClipRRect(
             borderRadius: rayon,
-            child: ImageWidget(url: optionAUrl, height: heights),
+            child: SizedBox(
+              width: double.infinity,
+              height: heights,
+              child: ImageWidget(url: optionAUrl, height: heights),
+            ),
           ),
         ),
         const Gap(espaceXs),
         Expanded(
           child: ClipRRect(
             borderRadius: rayon,
-            child: ImageWidget(url: optionBUrl, height: heights),
+            child: SizedBox(
+              width: double.infinity,
+              height: heights,
+              child: ImageWidget(url: optionBUrl, height: heights),
+            ),
           ),
         ),
       ],

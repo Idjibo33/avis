@@ -2,6 +2,7 @@ import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/post_table_proider.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/button_principale_widget.dart';
 import 'package:avis/widgets/image_field_widget.dart';
 import 'package:avis/widgets/texte_field_widget.dart';
@@ -32,30 +33,39 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: ListView(
+      // Les deux sélecteurs d'image occupent plus de 500 px : le bouton reste
+      // ancré sous la zone défilante pour rester visible et tactile.
+      child: Column(
         children: [
-          TexteFieldWidget(
-            label: "Votre question",
-            hint: 'Entrez la question de votre duel',
-            controller: texteController,
+          Expanded(
+            child: ListView(
+              children: [
+                TexteFieldWidget(
+                  label: "Votre question",
+                  hint: 'Entrez la question de votre duel',
+                  controller: texteController,
+                ),
+                ImageFieldWidget(
+                  label: "Option A",
+                  imagePicked: (XFile i) {
+                    setState(() {
+                      optionAImage = i;
+                    });
+                  },
+                ),
+                const Divider(),
+                ImageFieldWidget(
+                  label: "Option B",
+                  imagePicked: (XFile i) {
+                    setState(() {
+                      optionBImage = i;
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
-          ImageFieldWidget(
-            label: "Option A",
-            imagePicked: (XFile i) {
-              setState(() {
-                optionAImage = i;
-              });
-            },
-          ),
-          const Divider(),
-          ImageFieldWidget(
-            label: "Option B",
-            imagePicked: (XFile i) {
-              setState(() {
-                optionBImage = i;
-              });
-            },
-          ),
+          const SizedBox(height: espaceSm),
           Consumer<PostTableProider>(
             builder: (context, post, child) => ButtonPrincipaleWidget(
               texte: "Publier",

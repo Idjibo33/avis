@@ -96,6 +96,68 @@ void main() {
     expect(await demande, isFalse);
   });
 
+  testWidgets(
+    'write sans AuthElevationController : pas de plantage silencieux',
+    (tester) async {
+      final FakeAuthRepository repository = FakeAuthRepository();
+      addTearDown(repository.close);
+      await tester.pumpWidget(
+        ChangeNotifierProvider(
+          create: (_) => AuthServicesProviders(repository: repository),
+          child: const MaterialApp(home: Scaffold(body: SizedBox.expand())),
+        ),
+      );
+      final BuildContext context = tester.element(find.byType(Scaffold));
+      Provider.of<AuthServicesProviders>(context, listen: false);
+      repository.devenirInvite();
+      await tester.pumpAndSettle();
+
+      int appels = 0;
+      final Future<bool> demande = demanderElevation(
+        context,
+        action: () async {
+          appels++;
+        },
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AuthenticationScreen), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Fermer'));
+      await tester.pumpAndSettle();
+
+      expect(await demande, isFalse);
+      expect(appels, 0);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'sans AuthServicesProviders : repli visible, aucune feuille ni écriture',
+    (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(home: Scaffold(body: SizedBox.expand())),
+      );
+      final BuildContext context = tester.element(find.byType(Scaffold));
+
+      int appels = 0;
+      final bool reussi = await demanderElevation(
+        context,
+        action: () async {
+          appels++;
+        },
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(reussi, isFalse);
+      expect(appels, 0);
+      expect(find.byType(AuthenticationScreen), findsNothing);
+      expect(find.text('Action indisponible pour le moment.'), findsOneWidget);
+    },
+  );
+
   testWidgets('pseudo court et mot de passe court : saisie conservée', (
     tester,
   ) async {

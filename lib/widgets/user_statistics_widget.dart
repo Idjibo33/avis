@@ -24,49 +24,70 @@ class UserStatisticsWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const CorpsTextWidget(texte: 'Publications'),
-                  Consumer<PostTableProider>(
-                    builder: (context, posts, child) => StreamBuilder(
-                      stream: posts.readUserPost(userId: userId!),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return TitreTextWidget(
-                            fontSize: 25,
-                            texte: snapshot.data!.count.toString(),
-                          );
-                        }
-                        return const TitreTextWidget(fontSize: 25, texte: '0');
-                      },
+              // Deux colonnes à largeur égale : un compteur très long ne peut
+              // plus pousser la rangée hors de l'écran.
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CorpsTextWidget(texte: 'Publications'),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Consumer<PostTableProider>(
+                        builder: (context, posts, child) => StreamBuilder(
+                          stream: posts.readUserPost(userId: userId!),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return TitreTextWidget(
+                                fontSize: 25,
+                                texte: snapshot.data!.count.toString(),
+                              );
+                            }
+                            return const TitreTextWidget(
+                              fontSize: 25,
+                              texte: '0',
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const VerticalDivider(width: espaceXl),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const CorpsTextWidget(texte: 'Votes'),
-                  Consumer<InteractionsServicesProvider>(
-                    builder: (context, interactions, child) => FutureBuilder(
-                      future: interactions.readUserInteractions(
-                        userId: userId!,
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CorpsTextWidget(texte: 'Votes'),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Consumer<InteractionsServicesProvider>(
+                        builder: (context, interactions, child) =>
+                            FutureBuilder(
+                              future: interactions.readUserInteractions(
+                                userId: userId!,
+                              ),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return TitreTextWidget(
+                                    fontSize: 25,
+                                    texte: snapshot.data!.count.toString(),
+                                  );
+                                } else {
+                                  return TitreTextWidget(
+                                    fontSize: 25,
+                                    texte: '0',
+                                  );
+                                }
+                              },
+                            ),
                       ),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return TitreTextWidget(
-                            fontSize: 25,
-                            texte: snapshot.data!.count.toString(),
-                          );
-                        } else {
-                          return TitreTextWidget(fontSize: 25, texte: '0');
-                        }
-                      },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),

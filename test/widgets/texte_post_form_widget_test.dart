@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Screens/authentication_screen.dart';
@@ -88,6 +89,31 @@ void main() {
     expect(find.text('Quelle est la meilleure option ?'), findsOneWidget);
   });
 
+  testWidgets('champs vides : message explicite et aucune publication', (
+    tester,
+  ) async {
+    final FakePostsTableServices posts = FakePostsTableServices();
+    addTearDown(posts.close);
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => PostTableProider(
+          postsTableServices: posts,
+          storageServices: FakeStorageServices(),
+        ),
+        child: MaterialApp(
+          scaffoldMessengerKey: messengerKey,
+          home: const Scaffold(body: TextePostFormWidget()),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Publier'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Toutes les cases sont obligatoires'), findsOneWidget);
+    expect(posts.added, isEmpty);
+  });
+
   testWidgets('authentifié : publication puis effacement des champs', (
     tester,
   ) async {
@@ -140,6 +166,62 @@ void main() {
       expect(
         tester.widget<TextField>(find.byType(TextField).at(0)).controller!.text,
         'Quelle est la meilleure option ?',
+      );
+    },
+  );
+
+  testWidgets(
+    'invité sans AuthElevationController : la feuille s ouvre et publie',
+    (tester) async {
+      final FakePostsTableServices posts = FakePostsTableServices();
+      final FakeAuthRepository repository = FakeAuthRepository();
+      addTearDown(posts.close);
+      addTearDown(repository.close);
+
+      // Reproduction de la route poussée : les providers de données vivent
+      // au-dessus du Navigator, mais AuthElevationController est porté par
+      // AuthGate dans la route d'accueil et n'est donc pas visible ici.
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => PostTableProider(
+                postsTableServices: posts,
+                storageServices: FakeStorageServices(),
+              ),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => AuthServicesProviders(repository: repository),
+            ),
+          ],
+          child: const MaterialApp(home: Scaffold(body: TextePostFormWidget())),
+        ),
+      );
+      Provider.of<AuthServicesProviders>(
+        tester.element(find.byType(TextePostFormWidget)),
+        listen: false,
+      );
+      repository.devenirInvite();
+      await tester.pumpAndSettle();
+
+      await saisirDuel(tester);
+      await tester.tap(find.text('Publier'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AuthenticationScreen), findsOneWidget);
+      expect(posts.added, isEmpty);
+
+      await tester.enterText(find.byType(TextField).at(3), 'joueur_1');
+      await tester.enterText(find.byType(TextField).at(4), 'motdepasse1');
+      await tester.tap(find.text('Créer mon compte'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(posts.added, hasLength(1));
+      expect(
+        tester.widget<TextField>(find.byType(TextField).at(0)).controller!.text,
+        isEmpty,
       );
     },
   );

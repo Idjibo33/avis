@@ -43,6 +43,7 @@ lib/
 ├── Models/                   # Modèles de données (Post, Interaction, Profile)
 ├── Services/Supabase/        # Accès aux tables et au storage Supabase
 ├── Providers/                # État applicatif (Provider)
+├── State/                    # États explicites (OperationState, vues) et mappers
 ├── Screens/                  # Écrans : feed, auth, nouveau post, profil, résultat
 ├── Helpers/                  # Validation, navigation, formats, responsive
 └── widgets/                  # Widgets partagés
@@ -89,7 +90,17 @@ flutter test
 ```
 
 Les tests couvrent les helpers (validation, pourcentage, format de date), les providers
-(interactions) et les widgets/écrans principaux (auth, feed, résultat de duel, responsive).
+(interactions, états d'authentification), les machines à états explicites (`lib/State/`, voir
+[`docs/state-machines.md`](docs/state-machines.md)) et les widgets/écrans principaux (auth,
+feed, résultat de duel, responsive). Aucun service externe n'est nécessaire.
+
+## Branches
+
+- `main` — **production** : ne reçoit que du code prêt à être déployé, via fusion de `develop`.
+- `develop` — **développement** : branche d'intégration ciblée par toutes les Pull Requests.
+
+Flux recommandé : `feature/*` ou `fix/*` → `develop` → `main`. La CI (analyse, tests, build web)
+s'exécute sur les pushes et les Pull Requests des deux branches.
 
 ## Prochaines étapes
 

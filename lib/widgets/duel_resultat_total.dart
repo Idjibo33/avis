@@ -28,15 +28,14 @@ class DuelResultatTotal extends StatelessWidget {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const TitreTextWidget(texte: "0");
                       }
-                      if (snapshot.hasError) {
-                        return TitreTextWidget(
-                          texte: snapshot.error.toString(),
-                        );
-                      } else {
-                        return TitreTextWidget(
-                          texte: snapshot.data!.length.toString(),
-                        );
+                      // Le provider avale les erreurs et renvoie null : le distinguer
+                      // d'un vrai total à zéro, sans jamais dereferencer null.
+                      if (snapshot.hasError || !snapshot.hasData) {
+                        return const TitreTextWidget(texte: "Indisponible");
                       }
+                      return TitreTextWidget(
+                        texte: snapshot.data!.length.toString(),
+                      );
                     },
                   ),
                 ),

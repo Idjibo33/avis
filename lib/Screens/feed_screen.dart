@@ -3,6 +3,7 @@ import 'package:avis/Models/interaction.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
+import 'package:avis/State/feed_view_state.dart';
 import 'package:avis/widgets/card_widget.dart';
 import 'package:avis/widgets/drawer_widget.dart';
 import 'package:avis/widgets/empty_list_card_widget.dart';
@@ -43,12 +44,16 @@ class _FeedScreenState extends State<FeedScreen> {
       ),
       body: Responsiveness(
         child: Consumer<PostTableProider>(
-          builder: (context, posts, child) => StreamBuilder(
+          builder: (context, posts, child) => StreamBuilder<List<Post>>(
             key: ValueKey(tentative),
             stream: posts.streamPosts,
             builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
+              final FeedViewState vue = FeedViewState.from(
+                snapshot,
+                interactedDuals.toSet(),
+              );
+              return switch (vue.status) {
+                FeedStatus.failed => Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     spacing: 12,
@@ -62,71 +67,65 @@ class _FeedScreenState extends State<FeedScreen> {
                       ),
                     ],
                   ),
-                );
-              }
-              if (snapshot.hasData) {
-                final List<Post> dualsVisible = snapshot.data!
-                    .where((element) => !interactedDuals.contains(element.id))
-                    .toList();
-                if (dualsVisible.isEmpty) {
-                  return const EmptyListCardWidget();
-                } else {
-                  return Consumer<InteractionsServicesProvider>(
-                    builder: (context, interaction, child) => CardSwiper(
-                      scale: 0.9,
-                      duration: const Duration(milliseconds: 100),
-                      isLoop: false,
-                      allowedSwipeDirection: AllowedSwipeDirection.symmetric(
-                        horizontal: true,
-                        vertical: false,
-                      ),
-                      cardBuilder:
-                          (
-                            context,
-                            cardIndex,
-                            horizontalOffsetPercentage,
-                            verticalOffsetPercentage,
-                          ) {
-                            return CardWidget(post: dualsVisible[cardIndex]);
-                          },
-                      cardsCount: dualsVisible.length,
-                      numberOfCardsDisplayed: dualsVisible.length > 2
-                          ? 2
-                          : dualsVisible.length,
-                      onSwipe: (previousIndex, currentIndex, direction) async {
-                        final swipedPost = dualsVisible[previousIndex];
-                        if (direction == CardSwiperDirection.right) {
-                          interaction.addInteraction(
-                            interaction: Interaction(
-                              choix: "B",
-                              postId: swipedPost.id,
-                            ),
-                          );
-                          setState(() {
-                            interactedDuals.add(swipedPost.id ?? 0);
-                          });
-                          return true;
-                        }
-                        if (direction == CardSwiperDirection.left) {
-                          interaction.addInteraction(
-                            interaction: Interaction(
-                              choix: "A",
-                              postId: swipedPost.id,
-                            ),
-                          );
-                          setState(() {
-                            interactedDuals.add(swipedPost.id ?? 0);
-                          });
-                          return true;
-                        } else {
-                          return false;
-                        }
-                      },
+                ),
+                FeedStatus.empty => const EmptyListCardWidget(),
+                FeedStatus.ready => Consumer<InteractionsServicesProvider>(
+                  builder: (context, interaction, child) => CardSwiper(
+                    scale: 0.9,
+                    duration: const Duration(milliseconds: 100),
+                    isLoop: false,
+                    allowedSwipeDirection: AllowedSwipeDirection.symmetric(
+                      horizontal: true,
+                      vertical: false,
                     ),
-                  );
-                }
-              }
-              return const Center(child: CircularProgressIndicator.adaptive());
+                    cardBuilder:
+                        (
+                          context,
+                          cardIndex,
+                          horizontalOffsetPercentage,
+                          verticalOffsetPercentage,
+                        ) {
+                          return CardWidget(post: vue.postsVisibles[cardIndex]);
+                        },
+                    cardsCount: vue.postsVisibles.length,
+                    numberOfCardsDisplayed: vue.postsVisibles.length > 2
+                        ? 2
+                        : vue.postsVisibles.length,
+                    onSwipe: (previousIndex, currentIndex, direction) async {
+                      final swipedPost = vue.postsVisibles[previousIndex];
+                      if (direction == CardSwiperDirection.right) {
+                        interaction.addInteraction(
+                          interaction: Interaction(
+                            choix: "B",
+                            postId: swipedPost.id,
+                          ),
+                        );
+                        setState(() {
+                          interactedDuals.add(swipedPost.id ?? 0);
+                        });
+                        return true;
+                      }
+                      if (direction == CardSwiperDirection.left) {
+                        interaction.addInteraction(
+                          interaction: Interaction(
+                            choix: "A",
+                            postId: swipedPost.id,
+                          ),
+                        );
+                        setState(() {
+                          interactedDuals.add(swipedPost.id ?? 0);
+                        });
+                        return true;
+                      } else {
+                        return false;
+                      }
+                    },
+                  ),
+                ),
+                FeedStatus.loading => const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
+              };
             },
           ),
         ),

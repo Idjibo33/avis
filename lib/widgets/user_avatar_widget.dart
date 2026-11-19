@@ -1,3 +1,4 @@
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,9 @@ class UserAvatarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return CircleAvatar(
       radius: radius,
-      child: TitreTextWidget(texte: initiale, fontSize: radius),
+      backgroundColor: teal,
+      foregroundColor: blanc,
+      child: TitreTextWidget(texte: initiale, couleur: blanc, fontSize: radius),
     );
   }
 }

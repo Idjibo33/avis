@@ -16,8 +16,8 @@ class TabBarButonWidget extends StatelessWidget {
       spacing: 8,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        icone,
-        TitreTextWidget(texte: texte),
+        SizedBox(width: 18, height: 18, child: FittedBox(child: icone)),
+        TitreTextWidget(texte: texte, fontSize: 14),
       ],
     );
   }

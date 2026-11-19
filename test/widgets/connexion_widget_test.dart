@@ -12,38 +12,64 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  Future<AuthServicesProviders> pumpConnexion(WidgetTester tester) async {
-    final AuthServicesProviders auth = AuthServicesProviders(
-      authServices: FakeAuthServices(),
-      profileTableServices: FakeProfileTableServices(),
-    );
+  Future<FakeAuthRepository> pumpFormulaire(WidgetTester tester) async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    addTearDown(repository.close);
     await tester.pumpWidget(
       ChangeNotifierProvider(
-        create: (_) => auth,
-        child: const MaterialApp(
-          home: Scaffold(body: ConnexionWidget()),
-        ),
+        create: (_) => AuthServicesProviders(repository: repository),
+        child: const MaterialApp(home: Scaffold(body: ConnexionWidget())),
       ),
     );
-    return auth;
+    return repository;
   }
 
-  testWidgets('le mot de passe est masqué', (tester) async {
-    await pumpConnexion(tester);
+  testWidgets('un seul formulaire : pseudo puis mot de passe masqué', (
+    tester,
+  ) async {
+    await pumpFormulaire(tester);
 
+    expect(find.byType(TextField), findsNWidgets(2));
     final TextField motDePasse = tester.widget<TextField>(
       find.byType(TextField).at(1),
     );
     expect(motDePasse.obscureText, isTrue);
+    expect(find.text('Email'), findsNothing);
   });
 
-  testWidgets('la saisie survit à un rebuild du parent', (tester) async {
-    final AuthServicesProviders auth = await pumpConnexion(tester);
+  testWidgets('pseudo inférieur à 3 caractères : message français', (
+    tester,
+  ) async {
+    final FakeAuthRepository repository = await pumpFormulaire(tester);
 
-    await tester.enterText(find.byType(TextField).at(0), 'test@mail.com');
-    auth.notifyListeners();
-    await tester.pump();
+    await tester.enterText(find.byType(TextField).at(0), 'ab');
+    await tester.enterText(find.byType(TextField).at(1), 'motdepasse1');
+    await tester.tap(find.text('Créer mon compte'));
+    await tester.pumpAndSettle();
 
-    expect(find.text('test@mail.com'), findsOneWidget);
+    expect(
+      find.text(
+        'Le pseudo doit contenir entre 3 et 20 lettres, chiffres ou tirets bas.',
+      ),
+      findsOneWidget,
+    );
+    expect(repository.elevateCalls, 0);
+  });
+
+  testWidgets('mot de passe inférieur à 8 caractères : message français', (
+    tester,
+  ) async {
+    final FakeAuthRepository repository = await pumpFormulaire(tester);
+
+    await tester.enterText(find.byType(TextField).at(0), 'joueur_1');
+    await tester.enterText(find.byType(TextField).at(1), 'court');
+    await tester.tap(find.text('Créer mon compte'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Le mot de passe doit contenir au moins 8 caractères.'),
+      findsOneWidget,
+    );
+    expect(repository.elevateCalls, 0);
   });
 }

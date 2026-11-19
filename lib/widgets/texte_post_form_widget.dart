@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/post_table_proider.dart';
@@ -14,12 +15,9 @@ class TextePostFormWidget extends StatefulWidget {
 }
 
 class _TextePostFormWidgetState extends State<TextePostFormWidget> {
-  final TextEditingController questionTexteController =
-      TextEditingController();
-  final TextEditingController optionATexteController =
-      TextEditingController();
-  final TextEditingController optionBTexteController =
-      TextEditingController();
+  final TextEditingController questionTexteController = TextEditingController();
+  final TextEditingController optionATexteController = TextEditingController();
+  final TextEditingController optionBTexteController = TextEditingController();
 
   @override
   void dispose() {
@@ -46,7 +44,7 @@ class _TextePostFormWidgetState extends State<TextePostFormWidget> {
             label: "Option A",
             hint: "Entrez l'option A de votre duel",
           ),
-          const Divider(thickness: 2),
+          const Divider(),
           TexteFieldWidget(
             controller: optionBTexteController,
             lines: 7,
@@ -55,30 +53,35 @@ class _TextePostFormWidgetState extends State<TextePostFormWidget> {
           ),
           Consumer<PostTableProider>(
             builder: (context, post, child) => ButtonPrincipaleWidget(
-              texte: "Publiez",
+              texte: "Publier",
               action: () async {
                 final validation = validateIdeasDuel(
                   questionTexteController.text,
                   optionATexteController.text,
                   optionBTexteController.text,
                 );
-                if (validation) {
-                  await post.addPost(
-                    post: Post(
-                      created_at: '',
-                      user: '',
-                      question: questionTexteController.text.trim(),
-                      type: "text",
-                      option_a_text: optionATexteController.text.trim(),
-                      option_a_url: "",
-                      option_b_text: optionBTexteController.text.trim(),
-                      option_b_url: "",
-                    ),
-                  );
-                  questionTexteController.clear();
-                  optionATexteController.clear();
-                  optionBTexteController.clear();
-                }
+                if (!validation) return;
+                await demanderElevation(
+                  context,
+                  action: () async {
+                    await post.addPost(
+                      post: Post(
+                        created_at: '',
+                        user: '',
+                        question: questionTexteController.text.trim(),
+                        type: "text",
+                        option_a_text: optionATexteController.text.trim(),
+                        option_a_url: "",
+                        option_b_text: optionBTexteController.text.trim(),
+                        option_b_url: "",
+                      ),
+                    );
+                    if (!mounted) return;
+                    questionTexteController.clear();
+                    optionATexteController.clear();
+                    optionBTexteController.clear();
+                  },
+                );
               },
               chargement: post.chargement,
             ),

@@ -1,4 +1,4 @@
-import 'package:avis/widgets/corps_text_widget.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:avis/widgets/user_avatar_widget.dart';
 import 'package:flutter/material.dart';
@@ -25,18 +25,12 @@ class ProfileHeaderWidget extends StatelessWidget {
     return Row(
       children: [
         UserAvatarWidget(radius: radius, nom: nom),
-        const Gap(8),
+        const Gap(espaceLg),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TitreTextWidget(
-                texte: nomComplet,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const CorpsTextWidget(texte: "bio"),
-            ],
+          child: TitreTextWidget(
+            texte: nomComplet,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

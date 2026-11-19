@@ -12,12 +12,12 @@ class PostReactionsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: 6,
+      spacing: espaceSm,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const FaIcon(FontAwesomeIcons.solidHeart, color: couleureRose),
+        const FaIcon(FontAwesomeIcons.solidHeart, color: teal, size: 18),
         Row(
-          spacing: 4,
+          spacing: espaceXs,
           children: [
             Consumer<InteractionsServicesProvider>(
               builder: (context, interaction, child) => FutureBuilder(
@@ -26,14 +26,14 @@ class PostReactionsWidget extends StatelessWidget {
                   if (snapshot.hasData) {
                     return TitreTextWidget(
                       texte: snapshot.data!.length.toString(),
+                      fontSize: 14,
                     );
                   }
-                  return const Center(child: TitreTextWidget(texte: "0"));
+                  return const TitreTextWidget(texte: "0", fontSize: 14);
                 },
               ),
             ),
-
-            const TitreTextWidget(texte: "Votes"),
+            const TitreTextWidget(texte: "Votes", fontSize: 14),
           ],
         ),
       ],

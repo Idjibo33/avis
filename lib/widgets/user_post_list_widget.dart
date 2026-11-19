@@ -1,20 +1,22 @@
+import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/post_table_proider.dart';
-import 'package:avis/Services/Supabase/posts_table_services.dart';
 import 'package:avis/widgets/empty_list_card_widget.dart';
 import 'package:avis/widgets/mini_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserPostListWidget extends StatelessWidget {
   const UserPostListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final user = Supabase.instance.client.auth.currentUser;
+    final String? userId = context
+        .read<AuthServicesProviders>()
+        .current
+        .authUserId;
     return Consumer<PostTableProider>(
       builder: (context, value, child) => StreamBuilder(
-        stream: PostsTableServices().getUserPosts(user!.id),
+        stream: value.readUserPost(userId: userId!),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data!.count == 0) {

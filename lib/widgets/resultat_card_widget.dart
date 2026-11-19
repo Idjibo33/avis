@@ -1,4 +1,5 @@
 import 'package:avis/Models/post.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/image_post_content_widget.dart';
 import 'package:avis/widgets/text_post_content_widget.dart';
 import 'package:flutter/material.dart';
@@ -9,24 +10,24 @@ class ResultatCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isTextPost = post.type == 'text';
+    final bool isTextPost = post.type == 'text';
     return SizedBox(
       width: double.infinity,
       child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(24),
+        child: Padding(
+          padding: const EdgeInsets.all(espaceSm),
+          child: isTextPost
+              ? TextPostContentWidget(
+                  heights: 250,
+                  optionA: post.option_a_text ?? '',
+                  optionB: post.option_b_text ?? '',
+                )
+              : ImagePostContentWidget(
+                  heights: 250,
+                  optionAUrl: post.option_a_url ?? '',
+                  optionBUrl: post.option_b_url ?? '',
+                ),
         ),
-        child: isTextPost
-            ? TextPostContentWidget(
-                heights: 250,
-                optionA: post.option_a_text ?? '',
-                optionB: post.option_b_text ?? '',
-              )
-            : ImagePostContentWidget(
-                heights: 250,
-                optionAUrl: post.option_a_url ?? '',
-                optionBUrl: post.option_b_url ?? '',
-              ),
       ),
     );
   }

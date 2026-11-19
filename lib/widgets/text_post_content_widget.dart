@@ -23,39 +23,45 @@ class TextPostContentWidget extends StatelessWidget {
             height: heights,
             child: Container(
               decoration: BoxDecoration(
-                color: couleureBleue,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  bottomLeft: Radius.circular(24),
+                color: noir,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(rayonInterne),
+                  bottomLeft: Radius.circular(rayonInterne),
                 ),
               ),
-              child: Center(
-                child: TitreTextWidget(
-                  texte: optionA,
-                  couleur: Colors.white,
-                  align: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.all(espaceLg),
+                child: Center(
+                  child: TitreTextWidget(
+                    texte: optionA,
+                    couleur: blanc,
+                    align: TextAlign.center,
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        const Gap(2),
+        const Gap(espaceXs),
         Expanded(
           child: SizedBox(
             height: heights,
             child: Container(
               decoration: BoxDecoration(
-                color: couleureRose,
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+                color: teal,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(rayonInterne),
+                  bottomRight: Radius.circular(rayonInterne),
                 ),
               ),
-              child: Center(
-                child: TitreTextWidget(
-                  texte: optionB,
-                  couleur: Colors.white,
-                  align: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.all(espaceLg),
+                child: Center(
+                  child: TitreTextWidget(
+                    texte: optionB,
+                    couleur: blanc,
+                    align: TextAlign.center,
+                  ),
                 ),
               ),
             ),

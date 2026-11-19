@@ -1,3 +1,4 @@
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -15,14 +16,21 @@ class ImagePostContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final BorderRadius rayon = BorderRadius.circular(rayonInterne);
     return Row(
       children: [
         Expanded(
-          child: ImageWidget(url: optionAUrl, height: heights),
+          child: ClipRRect(
+            borderRadius: rayon,
+            child: ImageWidget(url: optionAUrl, height: heights),
+          ),
         ),
-        const Gap(2),
+        const Gap(espaceXs),
         Expanded(
-          child: ImageWidget(url: optionBUrl, height: heights),
+          child: ClipRRect(
+            borderRadius: rayon,
+            child: ImageWidget(url: optionBUrl, height: heights),
+          ),
         ),
       ],
     );

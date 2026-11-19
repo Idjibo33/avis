@@ -8,16 +8,16 @@ class ExpandedImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: AlignmentGeometry.center,
+      alignment: Alignment.center,
       children: [
         Image.network(imageUrl),
         SafeArea(
           child: CloseButton(
             style: ButtonStyle(
               iconSize: WidgetStatePropertyAll(24),
-              backgroundColor: WidgetStatePropertyAll(backgroundCouleureBleue),
+              backgroundColor: WidgetStatePropertyAll(noir),
+              foregroundColor: WidgetStatePropertyAll(blanc),
             ),
-            color: couleureRose,
             onPressed: () => Navigator.pop(context),
           ),
         ),

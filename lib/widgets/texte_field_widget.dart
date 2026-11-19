@@ -22,29 +22,20 @@ class TexteFieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: SizedBox(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TitreTextWidget(texte: label ?? ""),
-            const Gap(8),
-            TextField(
-              controller: controller,
-              obscuringCharacter: '•',
-              obscureText: obscureText,
-              minLines: obscureText ? 1 : lines,
-              maxLines: obscureText ? 1 : lines,
-              decoration: InputDecoration(
-                hint: CorpsTextWidget(texte: hint),
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TitreTextWidget(texte: label ?? "", fontSize: 14),
+          const Gap(8),
+          TextField(
+            controller: controller,
+            obscuringCharacter: '•',
+            obscureText: obscureText,
+            minLines: obscureText ? 1 : lines,
+            maxLines: obscureText ? 1 : lines,
+            decoration: InputDecoration(hint: CorpsTextWidget(texte: hint)),
+          ),
+        ],
       ),
     );
   }

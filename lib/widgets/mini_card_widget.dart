@@ -1,5 +1,6 @@
 import 'package:avis/Models/post.dart';
 import 'package:avis/Screens/resultat_duel_screen.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/image_post_content_widget.dart';
 import 'package:avis/widgets/post_reactions_widget.dart';
 import 'package:avis/widgets/text_post_content_widget.dart';
@@ -12,32 +13,33 @@ class MiniCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isTextPost = post.type == 'text';
+    final bool isTextPost = post.type == 'text';
 
-    return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => ResultatDuelScreen(post: post)),
-      ),
-      child: SizedBox(
+    return Semantics(
+      button: true,
+      label: 'Voir le résultat du duel',
+      child: InkWell(
+        borderRadius: BorderRadius.circular(rayonInterne),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultatDuelScreen(post: post),
+          ),
+        ),
         child: Column(
           children: [
-            Stack(
-              children: [
-                isTextPost
-                    ? TextPostContentWidget(
-                        heights: 150,
-                        optionA: post.option_a_text!,
-                        optionB: post.option_b_text!,
-                      )
-                    : ImagePostContentWidget(
-                        heights: 150,
-                        optionAUrl: post.option_a_url!,
-                        optionBUrl: post.option_b_url!,
-                      ),
-              ],
-            ),
-            const Gap(4),
+            isTextPost
+                ? TextPostContentWidget(
+                    heights: 150,
+                    optionA: post.option_a_text!,
+                    optionB: post.option_b_text!,
+                  )
+                : ImagePostContentWidget(
+                    heights: 150,
+                    optionAUrl: post.option_a_url!,
+                    optionBUrl: post.option_b_url!,
+                  ),
+            const Gap(espaceSm),
             PostReactionsWidget(postId: post.id!),
           ],
         ),

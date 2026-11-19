@@ -24,6 +24,7 @@ class HeaderCardWidget extends StatelessWidget {
               children: [
                 TitreTextWidget(
                   texte: nom,
+                  fontSize: 14,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

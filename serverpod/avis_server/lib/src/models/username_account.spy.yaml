@@ -1,0 +1,30 @@
+### Compte applicatif « pseudo + mot de passe », sans email.
+### Le champ `authUserId` est l'UUID de l'utilisateur anonyme existant :
+### l'élévation ne crée pas de nouvel utilisateur et conserve donc le même UUID.
+class: UsernameAccount
+serverOnly: true
+table: username_account
+fields:
+  id: int?, defaultPersist=serial
+
+  ### UUID de l'utilisateur auth (même UUID que le compte anonyme).
+  authUserId: UuidValue
+
+  ### Pseudo saisi par l'utilisateur (casse d'origine, pour l'affichage).
+  username: String
+
+  ### Pseudo en minuscules, utilisé pour la recherche et l'unicité.
+  usernameNormalized: String
+
+  ### Hash Argon2id au format PHC, avec pepper serveur.
+  passwordHash: String
+
+  createdAt: DateTime, defaultModel=now
+
+indexes:
+  username_account_username_normalized:
+    fields: usernameNormalized
+    unique: true
+  username_account_auth_user_id:
+    fields: authUserId
+    unique: true

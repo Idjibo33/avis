@@ -1,0 +1,19 @@
+### Vote d'un utilisateur sur un duel. L'identité vient de la session,
+### jamais d'un paramètre client.
+class: Vote
+table: vote
+fields:
+  id: int?, defaultPersist=serial
+  createdAt: DateTime, defaultModel=now
+  duelId: int
+  userId: UuidValue
+
+  ### "a" ou "b".
+  choix: String
+
+indexes:
+  vote_duel_user:
+    fields: duelId, userId
+    unique: true
+  vote_user:
+    fields: userId

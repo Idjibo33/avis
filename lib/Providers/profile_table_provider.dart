@@ -1,10 +1,13 @@
 import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Models/profile.dart';
-import 'package:avis/Services/Supabase/profile_table_services.dart';
+import 'package:avis/Services/serverpod/profile_table_services.dart';
 import 'package:flutter/material.dart';
 
 class ProfileTableProvider extends ChangeNotifier {
-  final ProfileTableServices _profileTableServices = ProfileTableServices();
+  ProfileTableProvider({ProfileTableServices? profileTableServices})
+    : _profileTableServices = profileTableServices ?? ProfileTableServices();
+
+  final ProfileTableServices _profileTableServices;
   bool _chargement = false;
   bool get chargement => _chargement;
   String _messageErreur = "";

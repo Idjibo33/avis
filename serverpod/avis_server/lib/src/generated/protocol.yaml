@@ -1,0 +1,18 @@
+anonymousIdp:
+  - login:
+jwtRefresh:
+  - refreshAccessToken:
+usernameAuth:
+  - register:
+  - signIn:
+publicFeed:
+  - listDuels:
+  - listVotes:
+  - countVotes:
+  - authorName:
+user:
+  - createDuel:
+  - vote:
+  - updateProfile:
+  - uploadImage:
+  - deleteDuel:

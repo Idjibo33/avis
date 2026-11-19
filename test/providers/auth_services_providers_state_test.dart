@@ -1,162 +1,128 @@
-import 'dart:async';
-
-import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
+import 'package:avis/Services/auth_repository.dart';
 import 'package:avis/State/operation_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fixtures/fakes.dart';
 
-class ControlledAuthServices extends FakeAuthServices {
-  final List<Completer<void>> _enAttente = [];
-  final List<Completer<void>> _enAttenteSignOut = [];
-  int appels = 0;
-
-  @override
-  Future signInUserWithEmail(String email, String password) {
-    appels++;
-    final Completer<void> attente = Completer<void>();
-    _enAttente.add(attente);
-    return attente.future;
-  }
-
-  @override
-  Future signOut() {
-    final Completer<void> attente = Completer<void>();
-    _enAttenteSignOut.add(attente);
-    return attente.future;
-  }
-
-  void terminer({Object? erreur}) => _terminer(_enAttente, erreur);
-
-  void terminerSignOut({Object? erreur}) =>
-      _terminer(_enAttenteSignOut, erreur);
-
-  void _terminer(List<Completer<void>> attentes, Object? erreur) {
-    for (final Completer<void> attente in attentes) {
-      if (attente.isCompleted) continue;
-      if (erreur == null) {
-        attente.complete();
-      } else {
-        attente.completeError(erreur);
-      }
-    }
-  }
-}
-
-Future<void> pumpAvecMessenger(WidgetTester tester) => tester.pumpWidget(
-  MaterialApp(
-    home: ScaffoldMessenger(
-      key: messengerKey,
-      child: const Scaffold(body: SizedBox.shrink()),
-    ),
-  ),
-);
-
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  AuthServicesProviders buildProvider(ControlledAuthServices services) =>
-      AuthServicesProviders(
-        authServices: services,
-        profileTableServices: FakeProfileTableServices(),
-      );
-
-  Future<Map<String, dynamic>> connecter(AuthServicesProviders provider) async {
-    final Future<bool> resultat = provider.signInUser(
-      email: 'test@mail.com',
-      password: 'secret1',
+  test("l'initialisation publie l'état invité", () async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    final AuthServicesProviders provider = AuthServicesProviders(
+      repository: repository,
     );
+
+    expect(provider.current.status, AuthSessionStatus.unknown);
+    expect(await provider.initialize(), isTrue);
+    repository.devenirInvite();
     await Future<void>.value();
-    return {'resultat': resultat, 'etat': provider.state};
-  }
+
+    expect(provider.current.status, AuthSessionStatus.guest);
+    expect(repository.initializeCalls, 1);
+    expect(provider.operation, isA<OperationSucceeded>());
+    provider.dispose();
+    await repository.close();
+  });
+
+  test('une opération en cours bloque le second appel', () async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    final AuthServicesProviders provider = AuthServicesProviders(
+      repository: repository,
+    );
+    repository.devenirInvite();
+
+    final Future<bool> premier = provider.elevate(
+      pseudo: 'joueur_1',
+      password: 'motdepasse1',
+    );
+    expect(provider.chargement, isTrue);
+    final bool second = await provider.signOut();
+
+    expect(second, isFalse);
+    expect(repository.signOutCalls, 0);
+    expect(await premier, isTrue);
+    expect(repository.elevateCalls, 1);
+    expect(provider.current.status, AuthSessionStatus.authenticated);
+    provider.dispose();
+    await repository.close();
+  });
 
   test(
-    'une connexion en cours est visible et bloque un second appel',
+    "un échec d'élévation reste invité et garde un message explicite",
     () async {
-      final ControlledAuthServices services = ControlledAuthServices();
-      final AuthServicesProviders provider = buildProvider(services);
-
-      final Map<String, dynamic> enCours = await connecter(provider);
-      expect(enCours['etat'], isA<OperationRunning>());
-      expect(provider.chargement, isTrue);
-
-      final Future<bool> second = provider.signInUser(
-        email: 'test@mail.com',
-        password: 'secret1',
+      final FakeAuthRepository repository = FakeAuthRepository();
+      final AuthServicesProviders provider = AuthServicesProviders(
+        repository: repository,
       );
-      expect(services.appels, 1);
+      repository.devenirInvite();
+      repository.erreurElevation = Exception('Identifiants refusés');
 
-      services.terminer();
-      expect(await enCours['resultat'], isTrue);
-      await second;
-      expect(provider.chargement, isFalse);
-      expect(provider.state, isA<OperationSucceeded>());
+      final bool resultat = await provider.elevate(
+        pseudo: 'joueur_1',
+        password: 'motdepasse1',
+      );
+
+      expect(resultat, isFalse);
+      expect(provider.operation, isA<OperationFailed>());
+      expect(provider.messageErreur, contains('Identifiants refusés'));
+      expect(provider.current.status, AuthSessionStatus.guest);
+      provider.dispose();
+      await repository.close();
     },
   );
 
-  test('un échec est explicite et l état revient au repos', () async {
-    final ControlledAuthServices services = ControlledAuthServices();
-    final AuthServicesProviders provider = buildProvider(services);
-
-    final Map<String, dynamic> enCours = await connecter(provider);
-    services.terminer(erreur: Exception('boom'));
-
-    expect(await enCours['resultat'], isFalse);
-    expect(provider.chargement, isFalse);
-    expect(provider.state, isA<OperationFailed>());
-    expect(provider.messageErreur, contains('boom'));
-  });
-
-  test('un succès ultérieur efface le message d erreur périmé', () async {
-    final ControlledAuthServices services = ControlledAuthServices();
-    final AuthServicesProviders provider = buildProvider(services);
-
-    final Map<String, dynamic> echec = await connecter(provider);
-    services.terminer(erreur: Exception('boom'));
-    await echec['resultat'];
-    expect(provider.messageErreur, isNotEmpty);
-
-    final Map<String, dynamic> succes = await connecter(provider);
-    services.terminer();
-    expect(await succes['resultat'], isTrue);
-    expect(provider.messageErreur, isEmpty);
-    expect(provider.state, isA<OperationSucceeded>());
-  });
-
-  testWidgets('une connexion en échec affiche un snackbar', (tester) async {
-    await pumpAvecMessenger(tester);
-
-    final ControlledAuthServices services = ControlledAuthServices();
-    final AuthServicesProviders provider = buildProvider(services);
-    final Future<bool> resultat = provider.signInUser(
-      email: 'test@mail.com',
-      password: 'secret1',
+  test('validation : pseudo court ou mot de passe court refusés', () async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    final AuthServicesProviders provider = AuthServicesProviders(
+      repository: repository,
     );
-    services.terminer(erreur: Exception('boom'));
-    expect(await resultat, isFalse);
 
-    await tester.pump();
-    await tester.pump();
-    expect(find.textContaining('boom'), findsOneWidget);
+    expect(
+      await provider.elevate(pseudo: 'ab', password: 'motdepasse1'),
+      isFalse,
+    );
+    expect(provider.messageErreur, contains('pseudo'));
+
+    expect(
+      await provider.signIn(pseudo: 'joueur_1', password: 'court'),
+      isFalse,
+    );
+    expect(provider.messageErreur, contains('8 caractères'));
+    expect(repository.elevateCalls, 0);
+    expect(repository.signInCalls, 0);
+    provider.dispose();
+    await repository.close();
   });
 
-  testWidgets('une déconnexion en échec reste silencieuse comme avant', (
-    tester,
-  ) async {
-    await pumpAvecMessenger(tester);
+  test('déconnexion : retour invité sans navigation', () async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    final AuthServicesProviders provider = AuthServicesProviders(
+      repository: repository,
+    );
+    repository.devenirAuthentifie();
 
-    final ControlledAuthServices services = ControlledAuthServices();
-    final AuthServicesProviders provider = buildProvider(services);
-    final Future<bool> resultat = provider.signOutuser();
-    services.terminerSignOut(erreur: Exception('boom'));
-    expect(await resultat, isFalse);
+    expect(await provider.signOut(), isTrue);
+    await Future<void>.value();
+    expect(repository.signOutCalls, 1);
+    expect(provider.current.status, AuthSessionStatus.guest);
+    provider.dispose();
+    await repository.close();
+  });
 
-    await tester.pump();
-    await tester.pump();
-    expect(provider.state, isA<OperationFailed>());
-    expect(provider.messageErreur, contains('boom'));
-    expect(find.textContaining('boom'), findsNothing);
+  test('erreur du flux convertie en état failed', () async {
+    final FakeAuthRepository repository = FakeAuthRepository();
+    final AuthServicesProviders provider = AuthServicesProviders(
+      repository: repository,
+    );
+
+    repository.emit(
+      const AuthSessionState(status: AuthSessionStatus.failed, error: 'boom'),
+    );
+    await Future<void>.value();
+
+    expect(provider.current.status, AuthSessionStatus.failed);
+    expect(provider.current.error?.toString(), 'boom');
+    provider.dispose();
+    await repository.close();
   });
 }

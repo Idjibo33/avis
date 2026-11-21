@@ -16,13 +16,13 @@ class ButtonPrincipaleWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 45,
+      height: 48,
       width: double.infinity,
       child: FilledButton(
         onPressed: chargement ? null : action,
         child: chargement
             ? const CorpsTextWidget(texte: "Patientez")
-            : TitreTextWidget(texte: texte),
+            : TitreTextWidget(texte: texte, fontSize: 14),
       ),
     );
   }

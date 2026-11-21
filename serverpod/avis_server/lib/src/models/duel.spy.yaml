@@ -1,0 +1,24 @@
+### Un duel du feed (anciennement « post » dans l'app Flutter).
+class: Duel
+table: duel
+fields:
+  id: int?, defaultPersist=serial
+  createdAt: DateTime, defaultModel=now
+
+  ### UUID de l'auteur, jamais fourni par le client en écriture.
+  authorId: UuidValue
+
+  ### Pseudo de l'auteur au moment de la création (lecture seule pour le feed).
+  authorName: String
+  question: String
+
+  ### "text" ou "image".
+  type: String
+  optionAText: String?
+  optionAUrl: String?
+  optionBText: String?
+  optionBUrl: String?
+
+indexes:
+  duel_created_at:
+    fields: createdAt

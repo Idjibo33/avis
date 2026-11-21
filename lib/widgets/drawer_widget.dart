@@ -1,5 +1,6 @@
 import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/list_tile_widget.dart';
 import 'package:avis/widgets/logo.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: espaceLg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -24,27 +25,27 @@ class DrawerWidget extends StatelessWidget {
                 const Gap(30),
                 ListTileWidget(
                   action: () => naviguerProfilScreen(context),
-                  leading: FaIcon(FontAwesomeIcons.user),
+                  leading: const FaIcon(FontAwesomeIcons.user, size: 20),
                   titre: "Profil",
                 ),
+                const Gap(espaceSm),
                 ListTileWidget(
-                  action: () => naviguerNewPostScreen(context),
-                  leading: FaIcon(FontAwesomeIcons.plus),
+                  action: () => demanderElevation(
+                    context,
+                    action: () async => naviguerNewPostScreen(context),
+                  ),
+                  leading: const FaIcon(FontAwesomeIcons.plus, size: 20),
                   titre: "Faire un post",
                 ),
-                // const ListTileWidget(
-                //   leading: FaIcon(FontAwesomeIcons.bell),
-                //   titre: "Activités",
-                // ),
               ],
             ),
             Consumer<AuthServicesProviders>(
               builder: (context, auth, child) => ListTileWidget(
-                action: () async {
-                  await auth.signOutuser();
-                  if (context.mounted) naviguerAuthGate(context);
-                },
-                leading: FaIcon(FontAwesomeIcons.arrowRightFromBracket),
+                action: () => auth.signOut(),
+                leading: const FaIcon(
+                  FontAwesomeIcons.arrowRightFromBracket,
+                  size: 20,
+                ),
                 titre: "Déconnecter",
               ),
             ),

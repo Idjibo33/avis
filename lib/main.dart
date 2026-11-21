@@ -3,28 +3,54 @@ import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Providers/profile_table_provider.dart';
+import 'package:avis/Services/auth_repository.dart';
+import 'package:avis/Services/serverpod/auth_repository_factory.dart';
+import 'package:avis/Services/serverpod/client.dart';
+import 'package:avis/Services/serverpod/interactions_services.dart';
+import 'package:avis/Services/serverpod/posts_table_services.dart';
+import 'package:avis/Services/serverpod/profile_table_services.dart';
+import 'package:avis/Services/serverpod/storage_services.dart';
 import 'package:avis/auth_gate.dart';
-import 'package:avis/constants.dart';
+import 'package:avis/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-// Les clés sont fournies au build, jamais commitées :
-// flutter run --dart-define-from-file=.env
-// flutter build web --dart-define=URL=... --dart-define=ANONKEY=...
+// L'adresse du backend est fournie au build, jamais codée en dur :
+// flutter run --dart-define=SERVERPOD_URL=http://localhost:8080
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  const String url = String.fromEnvironment('URL');
-  const String anonKey = String.fromEnvironment('ANONKEY');
-  await Supabase.initialize(url: url, anonKey: anonKey);
+
+  const String serverpodUrl = String.fromEnvironment(
+    'SERVERPOD_URL',
+    defaultValue: 'http://localhost:8080',
+  );
+  final AuthRepository authRepository = createAuthRepository(
+    serverUri: Uri.parse(serverpodUrl),
+  );
+  final client = serverpodClient;
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthServicesProviders()),
-        ChangeNotifierProvider(create: (context) => ProfileTableProvider()),
-        ChangeNotifierProvider(create: (context) => PostTableProider()),
         ChangeNotifierProvider(
-          create: (context) => InteractionsServicesProvider(),
+          create: (context) =>
+              AuthServicesProviders(repository: authRepository),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ProfileTableProvider(
+            profileTableServices: ProfileTableServices(client: client),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => PostTableProider(
+            postsTableServices: PostsTableServices(client: client),
+            storageServices: StorageServices(client: client),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => InteractionsServicesProvider(
+            interactions: InteractionsServices(client: client),
+          ),
         ),
       ],
       child: const MainApp(),
@@ -39,9 +65,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       scaffoldMessengerKey: messengerKey,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: backgroundCouleureBleue),
-      ),
+      theme: appTheme(),
       debugShowCheckedModeBanner: false,
       home: const AuthGate(),
     );

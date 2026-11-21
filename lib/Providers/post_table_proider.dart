@@ -1,7 +1,7 @@
 import 'package:avis/Helpers/snackbar.dart';
 import 'package:avis/Models/post.dart';
-import 'package:avis/Services/Supabase/posts_table_services.dart';
-import 'package:avis/Services/Supabase/storage_services.dart';
+import 'package:avis/Services/serverpod/posts_table_services.dart';
+import 'package:avis/Services/serverpod/storage_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,8 +12,8 @@ class PostTableProider extends ChangeNotifier {
   PostTableProider({
     PostsTableServices? postsTableServices,
     StorageServices? storageServices,
-  })  : _postsTableServices = postsTableServices ?? PostsTableServices(),
-        _storageServices = storageServices ?? StorageServices();
+  }) : _postsTableServices = postsTableServices ?? PostsTableServices(),
+       _storageServices = storageServices ?? StorageServices();
 
   bool _chargement = false;
   bool get chargement => _chargement;

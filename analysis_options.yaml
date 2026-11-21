@@ -4,4 +4,6 @@ analyzer:
     - android/**
     - ios/**
     - web/**
+    # Le workspace Serverpod a son propre pubspec et sa propre analyse.
+    - serverpod/**
 include: package:flutter_lints/flutter.yaml

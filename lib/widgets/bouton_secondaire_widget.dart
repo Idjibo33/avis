@@ -17,11 +17,17 @@ class BoutonSecondaireWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 45,
+      height: 48,
       child: ElevatedButton.icon(
         onPressed: chargement ? null : action,
-        label: TitreTextWidget(texte: texte),
-        icon: chargement ? CircularProgressIndicator.adaptive() : icone,
+        label: TitreTextWidget(texte: texte, fontSize: 14),
+        icon: chargement
+            ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+              )
+            : (icone ?? const Icon(Icons.arrow_forward, size: 18)),
       ),
     );
   }

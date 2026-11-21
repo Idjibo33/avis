@@ -1,6 +1,6 @@
 # Avis
 
-**Application mobile de vote social par swipe — Flutter + Supabase**
+**Application mobile de vote social par swipe — Flutter + Serverpod**
 
 [Live demo](https://avis-pp3j.vercel.app/)
 
@@ -10,13 +10,13 @@ Avis est une application interactive conçue pour faciliter la prise de décisio
 
 ## Fonctionnalités
 
-- **Authentification :** création de compte et connexion (Supabase Auth).
+- **Authentification :** démarrage en invité, élévation en une feuille modale avec pseudo (3–20 caractères) et mot de passe (8 caractères minimum). Pas d'email, ni de récupération de mot de passe.
 - **Création de duels :** questions textuelles ou visuelles (`image_picker` pour l'upload d'images).
 - **Système de swipe :** vote sur les duels (`flutter_card_swiper`), enregistrement des interactions.
-- **Flux temps réel :** affichage des posts et résultats mis à jour en direct (streams Supabase).
+- **Flux du feed :** duels lus depuis les endpoints publics Serverpod et exposés au client sous forme de stream, rafraîchi après chaque écriture.
 - **Page de profil :** posts publiés et interactions de l'utilisateur.
 - **Statistiques d'un duel :** répartition des votes et résultat.
-- **Sécurité :** politiques RLS (Row Level Security) configurées côté Supabase.
+- **Sécurité :** écritures derrière `requireLogin`, identité toujours dérivée de la session côté serveur ; aucun `userId` n'est accepté en paramètre.
 
 ## Aperçu
 
@@ -29,58 +29,86 @@ Avis est une application interactive conçue pour faciliter la prise de décisio
 | Domaine | Technologie |
 |---|---|
 | Framework | Flutter / Dart |
-| Backend | Supabase — Auth, PostgreSQL, Storage |
-| Gestion d'état | Provider (ChangeNotifier) |
+| Backend | Serverpod 4.1.2 — serveur Dart, PostgreSQL, endpoints publics/authentifiés, client généré |
+| Gestion d'état | Provider (ChangeNotifier) + états explicites (`lib/State/`) |
 | UI | `flutter_card_swiper`, `google_fonts`, `font_awesome_flutter`, `gap` |
-| Configuration | Clés injectées au build via `--dart-define` (jamais commitées) |
+| Configuration | `SERVERPOD_URL` injectée au build via `--dart-define` (défaut `http://localhost:8080`) ; secrets serveur dans `passwords.yaml` (jamais commité) |
 
 ## Architecture du projet
 
 ```
 lib/
-├── main.dart                 # Point d'entrée (injection des clés + Supabase.initialize)
-├── auth_gate.dart            # Redirection selon l'état de connexion
+├── main.dart                 # Point d'entrée : crée le dépôt d'auth et injecte les providers
+├── auth_gate.dart            # Feed en vue de départ + contrôleur d'élévation
 ├── Models/                   # Modèles de données (Post, Interaction, Profile)
-├── Services/Supabase/        # Accès aux tables et au storage Supabase
-├── Providers/                # État applicatif (Provider)
-├── State/                    # États explicites (OperationState, vues) et mappers
-├── Screens/                  # Écrans : feed, auth, nouveau post, profil, résultat
-├── Helpers/                  # Validation, navigation, formats, responsive
-└── widgets/                  # Widgets partagés
+├── Services/auth_repository.dart       # Contrat client : AuthSessionState / AuthRepository
+├── Services/serverpod/                 # Adaptateurs du client généré (auth, duels, votes, profil, images)
+├── Providers/                # État applicatif (Provider), dont AuthServicesProviders
+├── State/                    # États explicites (OperationState, AuthGateViewState, élévation)
+├── Screens/                  # Écrans : feed, feuille d'auth, nouveau post, profil, résultat
+├── Helpers/                  # Validation, navigation (demanderElevation), formats, responsive
+└── widgets/                  # Widgets partagés, dont le formulaire pseudo + mot de passe
+
+serverpod/
+├── avis_server/              # Serveur : endpoints, modèles *.spy.yaml, migrations, config
+└── avis_client/              # Client Dart généré, dépendance path du projet Flutter
 ```
 
-## Base de données (Supabase)
+### Flux d'authentification
 
-| Objet | Rôle |
+`AuthRepository` est la seule source de vérité de la session. `AuthGate` lit
+`AuthSessionState` via `AuthServicesProviders` : `unknown` affiche un
+chargement, `guest` et `authenticated` affichent directement le feed, `failed`
+affiche un état d'erreur explicite quand aucune session invité n'existe.
+
+L'élévation demande uniquement un **pseudo** et un **mot de passe** : il n'y a
+ni email, ni vérification, ni récupération de mot de passe. Le compte anonyme
+est élevé en conservant le même identifiant.
+
+Au premier acte d'écriture (vote, publication, ouverture du formulaire),
+`demanderElevation(context, action: ...)` ouvre la feuille `AuthenticationScreen`
+si l'utilisateur est invité. Un échec annule l'action et conserve les saisies ;
+un succès ferme la feuille et rejoue l'action une seule fois. La déconnexion du
+drawer repasse en invité sans quitter le feed.
+
+## Base de données (Serverpod)
+
+| Table | Rôle |
 |---|---|
-| `profiles` | Informations utilisateurs |
-| `posts` | Contenu des duels (question, options, auteur) |
-| `interactions` | Votes enregistrés |
-| Vue `post_to_show` | Lecture optimisée du feed (stream) |
+| `username_account` | Pseudo et hachage Argon2id du mot de passe |
+| `duel` | Contenu des duels (question, options, auteur) |
+| `vote` | Votes enregistrés (index unique `duelId` + `userId`) |
 
-Les politiques RLS sont définies dans le dashboard Supabase (non versionnées dans ce dépôt).
+Les modèles `*.spy.yaml` et les migrations sont versionnés dans
+`serverpod/avis_server/` ; les lectures publiques et les écritures authentifiées
+sont séparées en deux endpoints. Aucune politique RLS Supabase n'est impliquée.
 
 ## Installation
 
-Prérequis : Flutter stable et un projet Supabase avec les tables ci-dessus.
+Prérequis : Flutter/Dart stable, Serverpod CLI 4.1.2, PostgreSQL et Redis (ou la base embarquée fournie par le CLI pour le développement).
 
 ```bash
-flutter pub get
+# 1. Serveur : secrets, génération du client, migrations puis démarrage
+cd serverpod/avis_server
+cp config/passwords.yaml.example config/passwords.yaml  # à remplacer valeurs REPLACE_WITH_...
+cd .. && dart pub get
+cd avis_server && serverpod generate && serverpod create-migration
+serverpod start                 # ou : dart run bin/main.dart
 
-# 1. Créer le fichier .env à la racine à partir du modèle
+# 2. Client Flutter : adresse du serveur (défaut http://localhost:8080)
+cd ../..
 cp .env.example .env
-#    puis renseigner URL et ANONKEY (Supabase > Project Settings > API)
-
-# 2. Lancer l'application en injectant les clés au build
+#    renseigner uniquement SERVERPOD_URL ; les anciennes clés URL/ANONKEY sont ignorées
+flutter pub get
 flutter run --dart-define-from-file=.env
 
 # Variante build web
-flutter build web --dart-define=URL=<url> --dart-define=ANONKEY=<anonkey>
+flutter build web --dart-define=SERVERPOD_URL=<url>
 ```
 
-> Les clés sont lues avec `String.fromEnvironment` : aucun fichier de secrets n'est embarqué
-> ni listé dans `pubspec.yaml`. Sans `--dart-define`, l'application compile mais ne peut pas
-> joindre Supabase.
+> `SERVERPOD_URL` est lue avec `String.fromEnvironment` : aucun secret n'est embarqué
+> dans l'application. Sans `--dart-define`, elle vaut `http://localhost:8080`.
+> Les secrets du serveur restent dans `serverpod/avis_server/config/passwords.yaml` (gitignoré).
 
 ## Tests
 
@@ -89,10 +117,11 @@ flutter analyze
 flutter test
 ```
 
-Les tests couvrent les helpers (validation, pourcentage, format de date), les providers
+Les tests couvrent les helpers (validation du pseudo et du mot de passe, pourcentage, format de date), les providers
 (interactions, états d'authentification), les machines à états explicites (`lib/State/`, voir
-[`docs/state-machines.md`](docs/state-machines.md)) et les widgets/écrans principaux (auth,
-feed, résultat de duel, responsive). Aucun service externe n'est nécessaire.
+[`docs/state-machines.md`](docs/state-machines.md)) et les widgets/écrans principaux (gate en invité,
+feuille d'élévation, feed, résultat de duel, responsive). Le dépôt d'authentification est injecté
+en fake dans les tests ; aucun service externe n'est nécessaire. Les écritures passent par `demanderElevation` et sont couvertes avec un `AuthRepository` fake.
 
 ## Branches
 
@@ -105,8 +134,9 @@ s'exécute sur les pushes et les Pull Requests des deux branches.
 ## Prochaines étapes
 
 - Nouveau design de la page feed.
-- Tests widget de bout en bout sur le flux de vote.
-- Versionnage du schéma SQL et des politiques RLS.
+- Tests widget de bout en bout sur le flux de vote (invité → élévation → vote).
+- Compléter les adaptateurs qui lèvent encore `UnimplementedError` (mise à jour d'un duel/vote, suppression d'image ou de profil).
+- Migration des données historiques Supabase vers les tables Serverpod (hors dépôt).
 
 ## Licence
 

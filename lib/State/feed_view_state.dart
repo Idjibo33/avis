@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 enum FeedStatus { loading, ready, empty, failed }
 
-/// État du feed : flux Supabase + duels déjà votés localement.
+/// État du feed : flux Serverpod + duels déjà votés localement.
 final class FeedViewState {
   const FeedViewState._({
     required this.status,

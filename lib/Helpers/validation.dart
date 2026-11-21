@@ -1,38 +1,18 @@
 import 'package:avis/Helpers/snackbar.dart';
 import 'package:image_picker/image_picker.dart';
 
-bool validateInscriptionForm(
-  String nom,
-  String prenom,
-  String email,
-  String pw,
-  String confPw,
-) {
-  if (nom.isEmpty ||
-      prenom.isEmpty ||
-      email.isEmpty ||
-      pw.isEmpty ||
-      confPw.isEmpty) {
-    showError("Toutes les cases sont obligatoires");
-    return false;
-  }
-  if (pw != confPw) {
-    showError("les mots de passes ne correspondent pas");
-    return false;
-  }
-  if (pw.length < 6) {
-    showError("Le mot de doit avoir plus de 5 caractères");
-    return false;
-  }
-  return true;
-}
+/// Un seul identifiant : 3 à 20 lettres, chiffres ou tirets bas.
+final RegExp pseudoValide = RegExp(r'^[A-Za-z0-9_]{3,20}$');
 
-bool validateConnexionForm(String email, String pw) {
-  if (email.isEmpty || pw.isEmpty) {
-    showError("Toutes les cases sont obligatoires");
-    return false;
+/// Renvoie le message à afficher, ou `null` si l'élévation est valide.
+String? erreurValidationElevation(String pseudo, String password) {
+  if (!pseudoValide.hasMatch(pseudo.trim())) {
+    return 'Le pseudo doit contenir entre 3 et 20 lettres, chiffres ou tirets bas.';
   }
-  return true;
+  if (password.length < 8) {
+    return 'Le mot de passe doit contenir au moins 8 caractères.';
+  }
+  return null;
 }
 
 bool validateIdeasDuel(String question, String optionA, String optionB) {

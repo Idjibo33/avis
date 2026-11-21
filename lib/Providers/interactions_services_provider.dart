@@ -1,13 +1,13 @@
 import 'package:avis/Helpers/pourcentage.dart';
 import 'package:avis/Models/interaction.dart';
-import 'package:avis/Services/Supabase/interactions_services.dart';
+import 'package:avis/Services/serverpod/interactions_services.dart';
 import 'package:flutter/material.dart';
 
 class InteractionsServicesProvider extends ChangeNotifier {
   final InteractionsServices _interactions;
 
   InteractionsServicesProvider({InteractionsServices? interactions})
-      : _interactions = interactions ?? InteractionsServices();
+    : _interactions = interactions ?? InteractionsServices();
 
   Future addInteraction({required Interaction interaction}) async {
     try {
@@ -25,9 +25,7 @@ class InteractionsServicesProvider extends ChangeNotifier {
     }
   }
 
-  Future<InteractionWithCount>? readUserInteractions({
-    required String userId,
-  }) {
+  Future<InteractionWithCount>? readUserInteractions({required String userId}) {
     try {
       return _interactions.readUserData(userId);
     } catch (e) {

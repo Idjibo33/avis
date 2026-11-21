@@ -1,5 +1,6 @@
 import 'package:avis/Helpers/responsiveness.dart';
 import 'package:avis/Models/post.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/duel_resultat_pourcentage_widget.dart';
 import 'package:avis/widgets/duel_resultat_total.dart';
 import 'package:avis/widgets/resultat_card_widget.dart';
@@ -14,18 +15,26 @@ class ResultatDuelScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const TitreTextWidget(texte: "Resultat du duel")),
+      appBar: AppBar(title: const TitreTextWidget(texte: "Résultat du duel")),
       body: Responsiveness(
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Gap(12),
-              TitreTextWidget(texte: post.question, align: TextAlign.center),
-              const Gap(12),
+              const Gap(espaceXl),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: espaceLg),
+                child: TitreTextWidget(
+                  texte: post.question,
+                  align: TextAlign.center,
+                ),
+              ),
+              const Gap(espaceLg),
               ResultatCardWidget(post: post),
+              const Gap(espaceLg),
               DuelResultatPourcentageWidget(postId: post.id ?? 0),
+              const Gap(espaceLg),
               DuelResultatTotal(postId: post.id ?? 0),
-              const Gap(12),
+              const Gap(espaceXl),
             ],
           ),
         ),

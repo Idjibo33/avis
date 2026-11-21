@@ -14,11 +14,34 @@ void main() {
     addTearDown(tester.view.reset);
 
     await tester.pumpWidget(
-      const MaterialApp(
-        home: Scaffold(body: VoteDescriptionWidget()),
-      ),
+      const MaterialApp(home: Scaffold(body: VoteDescriptionWidget())),
     );
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('les boutons A et B sont des alternatives au swipe', (
+    tester,
+  ) async {
+    int votesA = 0;
+    int votesB = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: VoteDescriptionWidget(
+            onVoteA: () => votesA++,
+            onVoteB: () => votesB++,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Voter pour A'));
+    await tester.tap(find.byTooltip('Voter pour B'));
+    await tester.pump();
+
+    expect(votesA, 1);
+    expect(votesB, 1);
   });
 }

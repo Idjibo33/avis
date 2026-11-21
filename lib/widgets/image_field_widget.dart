@@ -1,4 +1,6 @@
 import 'package:avis/Helpers/platform_image.dart';
+import 'package:avis/constants.dart';
+import 'package:avis/widgets/corps_text_widget.dart';
 import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -32,28 +34,48 @@ class _ImageFieldWidgetState extends State<ImageFieldWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: SizedBox(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TitreTextWidget(texte: widget.label ?? ""),
-            const Gap(8),
-            SizedBox(
-              width: double.infinity,
-              height: 270,
-              child: pickedImage == null
-                  ? GestureDetector(
-                      onTap: () => imagepicking(),
-                      child: const Card(
-                        child: Center(
-                          child: FaIcon(FontAwesomeIcons.image),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TitreTextWidget(texte: widget.label ?? "", fontSize: 14),
+          const Gap(8),
+          SizedBox(
+            width: double.infinity,
+            height: 270,
+            child: pickedImage == null
+                ? Semantics(
+                    button: true,
+                    label: 'Ajouter une image',
+                    child: InkWell(
+                      onTap: imagepicking,
+                      borderRadius: BorderRadius.circular(rayonChamp),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: surfaceNeutre,
+                          borderRadius: BorderRadius.circular(rayonInterne),
+                          border: Border.all(color: bordureNeutre),
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: espaceSm,
+                          children: [
+                            FaIcon(
+                              FontAwesomeIcons.image,
+                              size: 32,
+                              color: teal,
+                            ),
+                            CorpsTextWidget(texte: 'Ajouter une image'),
+                          ],
                         ),
                       ),
-                    )
-                  : imageFromPath(pickedImage!.path, fit: BoxFit.cover),
-            ),
-          ],
-        ),
+                    ),
+                  )
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(rayonInterne),
+                    child: imageFromPath(pickedImage!.path, fit: BoxFit.cover),
+                  ),
+          ),
+        ],
       ),
     );
   }

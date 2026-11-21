@@ -3,33 +3,12 @@ import 'dart:async';
 import 'package:avis/Models/interaction.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Models/profile.dart';
-import 'package:avis/Services/Supabase/auth_services.dart';
-import 'package:avis/Services/Supabase/interactions_services.dart';
-import 'package:avis/Services/Supabase/posts_table_services.dart';
-import 'package:avis/Services/Supabase/profile_table_services.dart';
-import 'package:avis/Services/Supabase/storage_services.dart';
+import 'package:avis/Services/auth_repository.dart';
+import 'package:avis/Services/serverpod/interactions_services.dart';
+import 'package:avis/Services/serverpod/posts_table_services.dart';
+import 'package:avis/Services/serverpod/profile_table_services.dart';
+import 'package:avis/Services/serverpod/storage_services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-class FakeAuthServices implements AuthServices {
-  @override
-  Stream<AuthState> get authState => const Stream<AuthState>.empty();
-
-  @override
-  Future createUserWithEmail(String email, String password) async {}
-
-  @override
-  Future signInUserAnonynously() async {}
-
-  @override
-  Future signInUserWithEmail(String email, String password) async {}
-
-  @override
-  Future signInUserWithGoogle() async {}
-
-  @override
-  Future signOut() async {}
-}
 
 class FakeProfileTableServices implements ProfileTableServices {
   @override
@@ -93,12 +72,15 @@ class FakePostsTableServices implements PostsTableServices {
 
 class FakeInteractionsServices implements InteractionsServices {
   List<Interaction> interactions = [];
+  final List<Interaction> ajouts = [];
 
   @override
   String get table => 'interactions';
 
   @override
-  Future addData(Interaction item) async {}
+  Future addData(Interaction item) async {
+    ajouts.add(item);
+  }
 
   @override
   Future deletedata(Interaction item) async {}
@@ -129,6 +111,93 @@ class FakeStorageServices implements StorageServices {
 
   @override
   Future updateData(XFile item) async {}
+}
+
+/// Dépôt d'authentification pilotable : aucun backend, état explicite.
+class FakeAuthRepository implements AuthRepository {
+  FakeAuthRepository({
+    AuthSessionStatus statutInitial = AuthSessionStatus.unknown,
+  }) : _session = AuthSessionState(status: statutInitial);
+
+  final StreamController<AuthSessionState> _controller =
+      StreamController<AuthSessionState>.broadcast();
+
+  AuthSessionState _session;
+  int initializeCalls = 0;
+  int guestCalls = 0;
+  int elevateCalls = 0;
+  int signInCalls = 0;
+  int signOutCalls = 0;
+  Object? erreurElevation;
+  String dernierPseudo = '';
+
+  @override
+  Stream<AuthSessionState> get state => _controller.stream;
+
+  @override
+  AuthSessionState get current => _session;
+
+  void emit(AuthSessionState session) {
+    _session = session;
+    _controller.add(session);
+  }
+
+  void devenirInvite({Object? erreur}) => emit(
+    AuthSessionState(
+      status: AuthSessionStatus.guest,
+      authUserId: 'invite-1',
+      error: erreur,
+    ),
+  );
+
+  void devenirAuthentifie() => emit(
+    const AuthSessionState(
+      status: AuthSessionStatus.authenticated,
+      authUserId: 'utilisateur-1',
+      pseudo: 'joueur_1',
+    ),
+  );
+
+  @override
+  Future<void> initialize() async {
+    initializeCalls++;
+  }
+
+  @override
+  Future<void> signInAsGuest() async {
+    guestCalls++;
+    devenirInvite();
+  }
+
+  @override
+  Future<void> elevate({
+    required String pseudo,
+    required String password,
+  }) async {
+    elevateCalls++;
+    dernierPseudo = pseudo;
+    final Object? erreur = erreurElevation;
+    if (erreur != null) throw erreur;
+    devenirAuthentifie();
+  }
+
+  @override
+  Future<void> signIn({
+    required String pseudo,
+    required String password,
+  }) async {
+    signInCalls++;
+    dernierPseudo = pseudo;
+    devenirAuthentifie();
+  }
+
+  @override
+  Future<void> signOut() async {
+    signOutCalls++;
+    devenirInvite();
+  }
+
+  Future<void> close() => _controller.close();
 }
 
 Post buildPost({

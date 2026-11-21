@@ -14,12 +14,10 @@ class ListTileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: ListTile(
-        onTap: action,
-        leading: leading,
-        title: TitreTextWidget(texte: titre),
-      ),
+    return ListTile(
+      onTap: action,
+      leading: leading,
+      title: TitreTextWidget(texte: titre, fontSize: 14),
     );
   }
 }

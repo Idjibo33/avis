@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/navigators.dart';
 import 'package:avis/Helpers/validation.dart';
 import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/post_table_proider.dart';
@@ -46,7 +47,7 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
               });
             },
           ),
-          const Divider(thickness: 2),
+          const Divider(),
           ImageFieldWidget(
             label: "Option B",
             imagePicked: (XFile i) {
@@ -57,7 +58,7 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
           ),
           Consumer<PostTableProider>(
             builder: (context, post, child) => ButtonPrincipaleWidget(
-              texte: "Publiez",
+              texte: "Publier",
               action: () async {
                 final validation = validateImagesDuel(
                   texteController.text,
@@ -65,18 +66,23 @@ class _PhotosPostFormWidgetState extends State<PhotosPostFormWidget> {
                   optionBImage,
                 );
 
-                if (validation) {
-                  await post.addPost(
-                    post: Post(question: texteController.text, type: "image"),
-                    optionA: optionAImage,
-                    optionB: optionBImage,
-                  );
-                  setState(() {
-                    optionAImage = null;
-                    optionBImage = null;
-                    texteController.clear();
-                  });
-                }
+                if (!validation) return;
+                await demanderElevation(
+                  context,
+                  action: () async {
+                    await post.addPost(
+                      post: Post(question: texteController.text, type: "image"),
+                      optionA: optionAImage,
+                      optionB: optionBImage,
+                    );
+                    if (!mounted) return;
+                    setState(() {
+                      optionAImage = null;
+                      optionBImage = null;
+                      texteController.clear();
+                    });
+                  },
+                );
               },
               chargement: post.chargement,
             ),

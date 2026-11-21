@@ -21,43 +21,47 @@ class CardWidget extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Card(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            HeaderCardWidget(
-              nom: post.nom ?? 'Utilisateur',
-              date: post.created_at ?? '',
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: espaceLg,
-                vertical: espaceSm,
+        // Le feed donne une hauteur bornée à la carte : le contenu doit pouvoir
+        // défiler plutôt que de déborder verticalement du RenderFlex.
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              HeaderCardWidget(
+                nom: post.nom ?? 'Utilisateur',
+                date: post.created_at ?? '',
               ),
-              child: TitreTextWidget(
-                texte: post.question,
-                align: TextAlign.center,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: espaceLg,
+                  vertical: espaceSm,
+                ),
+                child: TitreTextWidget(
+                  texte: post.question,
+                  align: TextAlign.center,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(espaceSm),
-              child: isTextPost
-                  ? TextPostContentWidget(
-                      heights: 250,
-                      optionA: post.option_a_text ?? '',
-                      optionB: post.option_b_text ?? '',
-                    )
-                  : ImagePostContentWidget(
-                      heights: 250,
-                      optionAUrl: post.option_a_url ?? '',
-                      optionBUrl: post.option_b_url ?? '',
-                    ),
-            ),
-            const Gap(espaceSm),
-            VoteDescriptionWidget(onVoteA: onVoteA, onVoteB: onVoteB),
-            const Gap(espaceSm),
-            PostReactionsWidget(postId: post.id ?? 0),
-            const Gap(espaceLg),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(espaceSm),
+                child: isTextPost
+                    ? TextPostContentWidget(
+                        heights: 250,
+                        optionA: post.option_a_text ?? '',
+                        optionB: post.option_b_text ?? '',
+                      )
+                    : ImagePostContentWidget(
+                        heights: 250,
+                        optionAUrl: post.option_a_url ?? '',
+                        optionBUrl: post.option_b_url ?? '',
+                      ),
+              ),
+              const Gap(espaceSm),
+              VoteDescriptionWidget(onVoteA: onVoteA, onVoteB: onVoteB),
+              const Gap(espaceSm),
+              PostReactionsWidget(postId: post.id ?? 0),
+              const Gap(espaceLg),
+            ],
+          ),
         ),
       ),
     );

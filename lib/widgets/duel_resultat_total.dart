@@ -22,26 +22,33 @@ class DuelResultatTotal extends StatelessWidget {
               spacing: espaceXs,
               children: [
                 const CorpsTextWidget(texte: "Nombre total de votes"),
-                Consumer<InteractionsServicesProvider>(
-                  builder: (context, interations, child) => FutureBuilder(
-                    future: interations.readInteractions(postId: postId),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const TitreTextWidget(texte: "0", fontSize: 25);
-                      }
-                      // Le provider avale les erreurs et renvoie null : le distinguer
-                      // d'un vrai total à zéro, sans jamais dereferencer null.
-                      if (snapshot.hasError || !snapshot.hasData) {
-                        return const TitreTextWidget(
-                          texte: "Indisponible",
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Consumer<InteractionsServicesProvider>(
+                    builder: (context, interations, child) => FutureBuilder(
+                      future: interations.readInteractions(postId: postId),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const TitreTextWidget(
+                            texte: "0",
+                            fontSize: 25,
+                          );
+                        }
+                        // Le provider avale les erreurs et renvoie null : le distinguer
+                        // d'un vrai total à zéro, sans jamais dereferencer null.
+                        if (snapshot.hasError || !snapshot.hasData) {
+                          return const TitreTextWidget(
+                            texte: "Indisponible",
+                            fontSize: 25,
+                          );
+                        }
+                        return TitreTextWidget(
+                          texte: snapshot.data!.length.toString(),
                           fontSize: 25,
                         );
-                      }
-                      return TitreTextWidget(
-                        texte: snapshot.data!.length.toString(),
-                        fontSize: 25,
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
               ],

@@ -170,6 +170,33 @@ void main() {
     expect(interactions.ajouts, isEmpty);
   });
 
+  testWidgets(
+    'invité : le menu Faire un post ouvre la feuille puis le formulaire',
+    (tester) async {
+      final (FakeAuthRepository repository, _, _) = await pumpFeedAvecAuth(
+        tester,
+        authentifie: false,
+      );
+
+      await tester.tap(find.byTooltip('Menu'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Faire un post'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AuthenticationScreen), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).at(0), 'joueur_1');
+      await tester.enterText(find.byType(TextField).at(1), 'motdepasse1');
+      await tester.tap(find.text('Créer mon compte'));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(repository.elevateCalls, 1);
+      expect(find.text('Nouveau duel'), findsOneWidget);
+    },
+  );
+
   testWidgets('invité : une élévation réussie rejoue le vote une seule fois', (
     tester,
   ) async {

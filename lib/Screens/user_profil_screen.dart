@@ -41,12 +41,16 @@ class UserProfilScreen extends StatelessWidget {
                             texte: snapshot.data!.nom,
                             couleur: texteSecondaire,
                             fontSize: 16,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           );
                         }
                         return const TitreTextWidget(
                           texte: "@Utilisateur",
                           couleur: texteSecondaire,
                           fontSize: 16,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         );
                       },
                     ),

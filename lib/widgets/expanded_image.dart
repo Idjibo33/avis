@@ -10,7 +10,14 @@ class ExpandedImage extends StatelessWidget {
     return Stack(
       alignment: Alignment.center,
       children: [
-        Image.network(imageUrl),
+        // L'image est bornée à l'écran : un fichier très grand ne peut pas
+        // dépasser le cadre de la boîte de dialogue.
+        Image.network(
+          imageUrl,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.contain,
+        ),
         SafeArea(
           child: CloseButton(
             style: ButtonStyle(

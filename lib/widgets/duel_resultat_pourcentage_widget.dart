@@ -30,19 +30,27 @@ class DuelResultatPourcentageWidget extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TitreTextWidget(
-                      texte: pret
-                          ? 'A · ${pourcentA.toStringAsFixed(0)} %'
-                          : 'A · —',
-                      couleur: noir,
-                      fontSize: 14,
+                    Flexible(
+                      child: TitreTextWidget(
+                        texte: pret
+                            ? 'A · ${pourcentA.toStringAsFixed(0)} %'
+                            : 'A · —',
+                        couleur: noir,
+                        fontSize: 14,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    TitreTextWidget(
-                      texte: pret
-                          ? 'B · ${(100 - pourcentA).toStringAsFixed(0)} %'
-                          : 'B · —',
-                      couleur: teal,
-                      fontSize: 14,
+                    Flexible(
+                      child: TitreTextWidget(
+                        texte: pret
+                            ? 'B · ${(100 - pourcentA).toStringAsFixed(0)} %'
+                            : 'B · —',
+                        couleur: teal,
+                        fontSize: 14,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),

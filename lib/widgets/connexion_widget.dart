@@ -25,6 +25,8 @@ class _ConnexionWidgetState extends State<ConnexionWidget> {
   final TextEditingController pseudoController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? _erreur;
+  String? _erreurPseudo;
+  String? _erreurMotDePasse;
 
   @override
   void dispose() {
@@ -36,9 +38,14 @@ class _ConnexionWidgetState extends State<ConnexionWidget> {
   Future<void> _soumettre(AuthServicesProviders auth) async {
     final String pseudo = pseudoController.text.trim();
     final String motDePasse = passwordController.text;
-    final String? erreurLocale = erreurValidationElevation(pseudo, motDePasse);
-    if (erreurLocale != null) {
-      setState(() => _erreur = erreurLocale);
+    final String? erreurPseudo = erreurPseudoElevation(pseudo);
+    final String? erreurMotDePasse = erreurMotDePasseElevation(motDePasse);
+    if (erreurPseudo != null || erreurMotDePasse != null) {
+      setState(() {
+        _erreur = null;
+        _erreurPseudo = erreurPseudo;
+        _erreurMotDePasse = erreurMotDePasse;
+      });
       return;
     }
 
@@ -48,13 +55,19 @@ class _ConnexionWidgetState extends State<ConnexionWidget> {
     );
     if (!mounted) return;
     if (reussi) {
-      setState(() => _erreur = null);
+      setState(() {
+        _erreur = null;
+        _erreurPseudo = null;
+        _erreurMotDePasse = null;
+      });
       widget.onSuccess?.call();
       return;
     }
 
     final String? erreurSession = auth.current.error?.toString();
     setState(() {
+      _erreurPseudo = null;
+      _erreurMotDePasse = null;
       _erreur = auth.messageErreur.isNotEmpty
           ? auth.messageErreur
           : (erreurSession ?? 'Impossible de créer le compte.');
@@ -63,34 +76,51 @@ class _ConnexionWidgetState extends State<ConnexionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        TexteFieldWidget(
-          controller: pseudoController,
-          label: 'Pseudo',
-          hint: 'votre_pseudo',
-        ),
-        TexteFieldWidget(
-          controller: passwordController,
-          label: 'Mot de passe',
-          hint: 'Au moins 8 caractères',
-          obscureText: true,
-        ),
-        if (_erreur != null) ...[
-          const Gap(espaceSm),
-          CorpsTextWidget(texte: _erreur!, couleur: noir),
-        ],
-        const Gap(espaceLg),
-        Consumer<AuthServicesProviders>(
-          builder: (context, auth, child) => ButtonPrincipaleWidget(
+    return Consumer<AuthServicesProviders>(
+      builder: (context, auth, child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TexteFieldWidget(
+            controller: pseudoController,
+            label: 'Pseudo',
+            hint: 'votre_pseudo',
+            erreur: _erreurPseudo,
+            textCapitalization: TextCapitalization.none,
+            textInputAction: TextInputAction.next,
+            onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+            onChanged: (_) {
+              if (_erreurPseudo != null) {
+                setState(() => _erreurPseudo = null);
+              }
+            },
+          ),
+          TexteFieldWidget(
+            controller: passwordController,
+            label: 'Mot de passe',
+            hint: 'Au moins 8 caractères',
+            obscureText: true,
+            erreur: _erreurMotDePasse,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _soumettre(auth),
+            onChanged: (_) {
+              if (_erreurMotDePasse != null) {
+                setState(() => _erreurMotDePasse = null);
+              }
+            },
+          ),
+          if (_erreur != null) ...[
+            const Gap(espaceSm),
+            CorpsTextWidget(texte: _erreur!, couleur: noir),
+          ],
+          const Gap(espaceLg),
+          ButtonPrincipaleWidget(
             texte: 'Créer mon compte',
             action: () => _soumettre(auth),
             chargement: auth.chargement,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

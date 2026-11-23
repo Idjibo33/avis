@@ -45,3 +45,9 @@ final TextStyle textCorpsStyle = GoogleFonts.inter(
   color: texteSecondaire,
   height: 1.4,
 );
+
+/// Chiffres à largeur fixe pour compteurs, pourcentages et totaux : la valeur
+/// ne fait plus varier la largeur du texte lors d'un rafraîchissement.
+final TextStyle textChiffresStyle = textTitreStyle.copyWith(
+  fontFeatures: const [FontFeature.tabularFigures()],
+);

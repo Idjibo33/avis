@@ -17,15 +17,19 @@ class ExpandedImage extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           fit: BoxFit.contain,
+          semanticLabel: 'Image agrandie du duel',
         ),
-        SafeArea(
-          child: CloseButton(
-            style: ButtonStyle(
-              iconSize: WidgetStatePropertyAll(24),
-              backgroundColor: WidgetStatePropertyAll(noir),
-              foregroundColor: WidgetStatePropertyAll(blanc),
+        Align(
+          alignment: Alignment.topRight,
+          child: SafeArea(
+            child: CloseButton(
+              style: ButtonStyle(
+                iconSize: WidgetStatePropertyAll(24),
+                backgroundColor: WidgetStatePropertyAll(noir),
+                foregroundColor: WidgetStatePropertyAll(blanc),
+              ),
+              onPressed: () => Navigator.pop(context),
             ),
-            onPressed: () => Navigator.pop(context),
           ),
         ),
       ],

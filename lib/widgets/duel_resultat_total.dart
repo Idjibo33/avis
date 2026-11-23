@@ -30,9 +30,9 @@ class DuelResultatTotal extends StatelessWidget {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const TitreTextWidget(
-                            texte: "0",
-                            fontSize: 25,
+                          return Text(
+                            "0",
+                            style: textChiffresStyle.copyWith(fontSize: 25),
                           );
                         }
                         // Le provider avale les erreurs et renvoie null : le distinguer
@@ -43,9 +43,9 @@ class DuelResultatTotal extends StatelessWidget {
                             fontSize: 25,
                           );
                         }
-                        return TitreTextWidget(
-                          texte: snapshot.data!.length.toString(),
-                          fontSize: 25,
+                        return Text(
+                          snapshot.data!.length.toString(),
+                          style: textChiffresStyle.copyWith(fontSize: 25),
                         );
                       },
                     ),

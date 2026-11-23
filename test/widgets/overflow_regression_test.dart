@@ -297,6 +297,31 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('image agrandie : fermeture ancrée en haut à droite', (
+    tester,
+  ) async {
+    await pumpSmall(tester, const SizedBox(key: ValueKey('contexte')));
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: SizedBox.expand(
+            child: ExpandedImage(imageUrl: 'https://img.test/a.jpg'),
+          ),
+        ),
+      ),
+    );
+
+    final Rect cadre = tester.getRect(find.byType(ExpandedImage));
+    final Rect bouton = tester.getRect(find.byType(CloseButton));
+    expect(bouton.center.dx, greaterThan(cadre.center.dx));
+    expect(bouton.center.dy, lessThan(cadre.center.dy));
+    expect(cadre.right - bouton.right, lessThan(32));
+    expect(bouton.top - cadre.top, lessThan(32));
+    // Image.network est montée ici : le 400 du banc de test est sans rapport
+    // avec la géométrie vérifiée.
+    tester.takeException();
+  });
+
   testWidgets('écran de résultat : long textes et pourcentages sur 320 px', (
     tester,
   ) async {

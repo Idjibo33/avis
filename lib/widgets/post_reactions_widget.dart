@@ -23,13 +23,13 @@ class PostReactionsWidget extends StatelessWidget {
               builder: (context, interaction, child) => FutureBuilder(
                 future: interaction.readInteractions(postId: postId),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return TitreTextWidget(
-                      texte: snapshot.data!.length.toString(),
-                      fontSize: 14,
-                    );
-                  }
-                  return const TitreTextWidget(texte: "0", fontSize: 14);
+                  final String valeur = snapshot.hasData
+                      ? snapshot.data!.length.toString()
+                      : '0';
+                  return Text(
+                    valeur,
+                    style: textChiffresStyle.copyWith(fontSize: 14),
+                  );
                 },
               ),
             ),

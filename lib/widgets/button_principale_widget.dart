@@ -1,3 +1,4 @@
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/corps_text_widget.dart';
 import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,22 @@ class ButtonPrincipaleWidget extends StatelessWidget {
       child: FilledButton(
         onPressed: chargement ? null : action,
         child: chargement
-            ? const CorpsTextWidget(texte: "Patientez")
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 18,
+                    height: 18,
+                    // Fond teal du FilledButton : le spinner doit rester blanc.
+                    child: CircularProgressIndicator.adaptive(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(blanc),
+                    ),
+                  ),
+                  const SizedBox(width: espaceSm),
+                  const CorpsTextWidget(texte: "Patientez"),
+                ],
+              )
             : TitreTextWidget(texte: texte, fontSize: 14),
       ),
     );

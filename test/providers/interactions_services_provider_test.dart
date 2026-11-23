@@ -4,11 +4,45 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../fixtures/fakes.dart';
 
+class InteractionsEnEchec extends FakeInteractionsServices {
+  @override
+  Future addData(Interaction item) async {
+    throw Exception('refus serveur');
+  }
+}
+
 void main() {
+  test('addInteraction : succès explicite', () async {
+    final InteractionsServicesProvider provider = InteractionsServicesProvider(
+      interactions: FakeInteractionsServices(),
+    );
+
+    expect(
+      await provider.addInteraction(
+        interaction: Interaction(choix: 'A', postId: 1),
+      ),
+      isTrue,
+    );
+  });
+
+  test('addInteraction : échec explicite sans exception', () async {
+    final InteractionsServicesProvider provider = InteractionsServicesProvider(
+      interactions: InteractionsEnEchec(),
+    );
+
+    expect(
+      await provider.addInteraction(
+        interaction: Interaction(choix: 'A', postId: 1),
+      ),
+      isFalse,
+    );
+  });
+
   test('aucune interaction : pourcentages à 0 sans NaN', () async {
     final FakeInteractionsServices services = FakeInteractionsServices();
-    final InteractionsServicesProvider provider =
-        InteractionsServicesProvider(interactions: services);
+    final InteractionsServicesProvider provider = InteractionsServicesProvider(
+      interactions: services,
+    );
 
     expect(await provider.optionAPourcentage(1), 0);
     expect(await provider.optionBPourcentage(1), 0);
@@ -22,8 +56,9 @@ void main() {
         Interaction(choix: 'B', postId: 1),
         Interaction(choix: 'A', postId: 1),
       ];
-    final InteractionsServicesProvider provider =
-        InteractionsServicesProvider(interactions: services);
+    final InteractionsServicesProvider provider = InteractionsServicesProvider(
+      interactions: services,
+    );
 
     expect(await provider.optionAPourcentage(1), 75);
     expect(await provider.optionBPourcentage(1), 25);

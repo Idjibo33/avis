@@ -6,6 +6,13 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import '../auth/logged_in_endpoint.dart';
 import '../generated/protocol.dart';
 
+/// Un duel n'est pas votable par son propre auteur. Règle serveur : un client
+/// contournant l'UI ne peut pas écrire de vote sur sa création.
+String? motifRefusVote(Duel duel, UuidValue votant) =>
+    duel.authorId == votant
+        ? "Vous ne pouvez pas voter pour votre propre duel."
+        : null;
+
 /// Écritures authentifiées. Toutes les identités sont dérivées de la session :
 /// aucun identifiant d'utilisateur n'est accepté en paramètre.
 class UserEndpoint extends LoggedInEndpoint {
@@ -46,7 +53,8 @@ class UserEndpoint extends LoggedInEndpoint {
   }
 
   /// Vote pour le duel [duelId]. Un seul vote par utilisateur et par duel :
-  /// un second appel remplace le choix précédent.
+  /// un second appel remplace le choix précédent. L'auteur est refusé : la
+  /// vérification est faite ici, côté serveur, pas seulement dans l'UI.
   Future<Vote> vote(Session session, int duelId, String choix) async {
     if (choix != 'a' && choix != 'b') {
       throw const FormatException('Choix invalide.');
@@ -60,6 +68,10 @@ class UserEndpoint extends LoggedInEndpoint {
     }
 
     final authUserId = session.authenticated!.authUserId;
+    final String? motifRefus = motifRefusVote(duel, authUserId);
+    if (motifRefus != null) {
+      throw FormatException(motifRefus);
+    }
     final existing = await Vote.db.findFirstRow(
       session,
       where: (t) => t.duelId.equals(duelId) & t.userId.equals(authUserId),

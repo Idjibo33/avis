@@ -20,7 +20,9 @@ class PostTableProider extends ChangeNotifier {
   String _message = "";
   Stream<List<Post>> get streamPosts => _postsTableServices.readData();
 
-  Future addPost({
+  /// Renvoie explicitement le succès de l'écriture : les formulaires ne vident
+  /// leurs champs que sur une publication effectivement confirmée.
+  Future<bool> addPost({
     required Post post,
     XFile? optionA,
     XFile? optionB,
@@ -40,23 +42,20 @@ class PostTableProider extends ChangeNotifier {
             option_b_url: urlImageB,
           ),
         );
-        _chargement = false;
-        _message = "Succès : Duel ajouté";
-        showSuccess(_message);
-
-        notifyListeners();
       } else {
         await _postsTableServices.addData(post);
-        _chargement = false;
-        _message = "Succès : Duel ajouté";
-        showSuccess(_message);
-        notifyListeners();
       }
+      _chargement = false;
+      _message = "Succès : Duel ajouté";
+      showSuccess(_message);
+      notifyListeners();
+      return true;
     } catch (e) {
       _chargement = false;
       _message = e.toString();
       showError(_message);
       notifyListeners();
+      return false;
     }
   }
 
@@ -90,6 +89,9 @@ class PostTableProider extends ChangeNotifier {
     }
   }
 
+  /// Un flux ne doit pas être partagé entre les widgets du profil : le rejeu du
+  /// cache est consommé par le premier abonné d'un flux broadcast, et le second
+  /// resterait en `waiting` (spinner infini). Chaque appel crée donc son flux.
   Stream<PostWithCount>? readUserPost({required String userId}) {
     try {
       return _postsTableServices.getUserPosts(userId);

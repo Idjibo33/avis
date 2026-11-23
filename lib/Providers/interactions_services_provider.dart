@@ -9,11 +9,15 @@ class InteractionsServicesProvider extends ChangeNotifier {
   InteractionsServicesProvider({InteractionsServices? interactions})
     : _interactions = interactions ?? InteractionsServices();
 
-  Future addInteraction({required Interaction interaction}) async {
+  /// Renvoie explicitement le succès de l'écriture : les écrans ne doivent pas
+  /// annoncer un vote enregistré quand le backend a refusé l'interaction.
+  Future<bool> addInteraction({required Interaction interaction}) async {
     try {
       await _interactions.addData(interaction);
+      return true;
     } catch (e) {
       debugPrint("Erreur lors de l'enregistrement de l'interaction : $e");
+      return false;
     }
   }
 

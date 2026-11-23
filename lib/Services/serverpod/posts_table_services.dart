@@ -20,24 +20,45 @@ Post _duelVersPost(Duel duel) => Post(
 /// Adaptateur du feed : les duels du backend sont convertis en [Post] pour ne
 /// pas modifier les écrans tant que la migration UI n'est pas faite.
 class PostsTableServices {
-  PostsTableServices({Client? client}) : _client = client ?? serverpodClient;
+  PostsTableServices({Client? client, Future<List<Duel>> Function()? chargeur})
+    : _client = client ?? serverpodClient,
+      _chargeur =
+          chargeur ?? (() => (client ?? serverpodClient).publicFeed.listDuels(limit: 50));
 
   final Client _client;
+  final Future<List<Duel>> Function() _chargeur;
   final String table = 'posts';
 
-  int _abonnes = 0;
+  /// Dernier feed reçu. Un `StreamController.broadcast` ne rejoue pas son
+  /// historique et son `onListen` ne s'appelle que pour le **premier** abonné :
+  /// publier le cache là-dedans ne suffit pas quand le feed est déjà ouvert.
+  List<Post>? _dernierFeed;
   late final StreamController<List<Post>> _controller =
       StreamController<List<Post>>.broadcast(
         onListen: () {
-          _abonnes++;
-          if (_abonnes == 1) unawaited(_rafraichir());
-        },
-        onCancel: () {
-          if (_abonnes > 0) _abonnes--;
+          if (_dernierFeed == null) unawaited(_rafraichir());
         },
       );
 
-  Stream<List<Post>> readData() => _controller.stream;
+  /// Chaque lecteur reçoit son propre flux broadcast, qui commence par le
+  /// dernier feed connu. Le profil empilé au-dessus du feed reçoit ainsi une
+  /// première image au lieu de rester sur son spinner.
+  Stream<List<Post>> readData() {
+    late final StreamController<List<Post>> flux;
+    flux = StreamController<List<Post>>.broadcast(
+      onListen: () {
+        final List<Post>? dernier = _dernierFeed;
+        if (dernier != null) flux.add(dernier);
+      },
+    );
+    final StreamSubscription<List<Post>> abonnement = _controller.stream.listen(
+      flux.add,
+      onError: flux.addError,
+      onDone: flux.close,
+    );
+    flux.onCancel = () => unawaited(abonnement.cancel());
+    return flux.stream;
+  }
 
   Stream<PostWithCount> getUserPosts(String userId) => readData().map((posts) {
     final List<Post> propres = posts
@@ -81,11 +102,15 @@ class PostsTableServices {
   /// pour que l'écran puisse afficher son état d'échec.
   Future<void> _rafraichir() async {
     try {
-      final List<Duel> duels = await _client.publicFeed.listDuels(limit: 50);
+      final List<Duel> duels = await _chargeur();
       if (!_controller.isClosed) {
-        _controller.add(duels.map(_duelVersPost).toList());
+        _dernierFeed = duels.map(_duelVersPost).toList();
+        _controller.add(_dernierFeed!);
       }
     } catch (error, stackTrace) {
+      // Le cache est vidé pour qu'un nouvel abonné (bouton Réessayer du feed,
+      // retour sur le profil) relance effectivement la requête.
+      _dernierFeed = null;
       if (!_controller.isClosed) _controller.addError(error, stackTrace);
     }
   }

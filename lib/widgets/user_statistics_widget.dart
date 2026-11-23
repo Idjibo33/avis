@@ -1,10 +1,11 @@
 import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
+import 'package:avis/Services/auth_repository.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/constants.dart';
 import 'package:avis/widgets/corps_text_widget.dart';
-import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 class UserStatisticsWidget extends StatelessWidget {
@@ -12,10 +13,10 @@ class UserStatisticsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String? userId = context
-        .read<AuthServicesProviders>()
-        .current
-        .authUserId;
+    final AuthSessionState session = context.read<AuthServicesProviders>().current;
+    final String? userId = session.authUserId;
+    final bool invite = session.status == AuthSessionStatus.guest;
+    final TextStyle styleChiffres = textChiffresStyle.copyWith(fontSize: 25);
     return SizedBox(
       width: double.infinity,
       child: Card(
@@ -31,23 +32,38 @@ class UserStatisticsWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CorpsTextWidget(texte: 'Publications'),
+                    // FittedBox : sur 360 px, chaque colonne ne mesure que
+                    // ~128 px. Sans bornage, le Row donne une largeur infinie
+                    // au texte et déborde de 63 px (pollué par la police de
+                    // repli des tests). Le libellé reste intact, il est
+                    // seulement réduit si nécessaire.
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.article_outlined, size: 16, color: teal),
+                          Gap(espaceXs),
+                          CorpsTextWidget(texte: 'Publications'),
+                        ],
+                      ),
+                    ),
+                    const Gap(espaceXs),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Consumer<PostTableProider>(
                         builder: (context, posts, child) => StreamBuilder(
-                          stream: posts.readUserPost(userId: userId!),
+                          stream: invite || userId == null
+                              ? null
+                              : posts.readUserPost(userId: userId),
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                              return TitreTextWidget(
-                                fontSize: 25,
-                                texte: snapshot.data!.count.toString(),
+                              return Text(
+                                snapshot.data!.count.toString(),
+                                style: styleChiffres,
                               );
                             }
-                            return const TitreTextWidget(
-                              fontSize: 25,
-                              texte: '0',
-                            );
+                            return Text('0', style: styleChiffres);
                           },
                         ),
                       ),
@@ -61,27 +77,33 @@ class UserStatisticsWidget extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CorpsTextWidget(texte: 'Votes'),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.how_to_vote_outlined, size: 16, color: teal),
+                          Gap(espaceXs),
+                          CorpsTextWidget(texte: 'Votes'),
+                        ],
+                      ),
+                    ),
+                    const Gap(espaceXs),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Consumer<InteractionsServicesProvider>(
                         builder: (context, interactions, child) =>
                             FutureBuilder(
-                              future: interactions.readUserInteractions(
-                                userId: userId!,
-                              ),
+                              future: invite || userId == null
+                                  ? null
+                                  : interactions.readUserInteractions(
+                                      userId: userId,
+                                    ),
                               builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return TitreTextWidget(
-                                    fontSize: 25,
-                                    texte: snapshot.data!.count.toString(),
-                                  );
-                                } else {
-                                  return TitreTextWidget(
-                                    fontSize: 25,
-                                    texte: '0',
-                                  );
-                                }
+                                final String valeur = snapshot.hasData
+                                    ? snapshot.data!.count.toString()
+                                    : '0';
+                                return Text(valeur, style: styleChiffres);
                               },
                             ),
                       ),

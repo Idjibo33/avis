@@ -1,6 +1,5 @@
 import 'package:avis/Providers/interactions_services_provider.dart';
 import 'package:avis/constants.dart';
-import 'package:avis/widgets/titre_text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
@@ -31,23 +30,27 @@ class DuelResultatPourcentageWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      child: TitreTextWidget(
-                        texte: pret
+                      child: Text(
+                        pret
                             ? 'A · ${pourcentA.toStringAsFixed(0)} %'
                             : 'A · —',
-                        couleur: noir,
-                        fontSize: 14,
+                        style: textChiffresStyle.copyWith(
+                          fontSize: 14,
+                          color: noir,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Flexible(
-                      child: TitreTextWidget(
-                        texte: pret
+                      child: Text(
+                        pret
                             ? 'B · ${(100 - pourcentA).toStringAsFixed(0)} %'
                             : 'B · —',
-                        couleur: teal,
-                        fontSize: 14,
+                        style: textChiffresStyle.copyWith(
+                          fontSize: 14,
+                          color: teal,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

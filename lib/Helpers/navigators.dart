@@ -1,7 +1,6 @@
 import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Screens/authentication_screen.dart';
 import 'package:avis/Screens/new_post_screen.dart';
-import 'package:avis/Screens/user_profil_screen.dart';
 import 'package:avis/Services/auth_repository.dart';
 import 'package:avis/State/auth_gate_state.dart';
 import 'package:flutter/material.dart';
@@ -79,9 +78,5 @@ void naviguerNewPostScreen(BuildContext context) {
   );
 }
 
-void naviguerProfilScreen(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => UserProfilScreen()),
-  );
-}
+/// Le changement d'onglet Feed/Profil ne passe pas par ici : il est géré par
+/// `MainNavigationShell` via un `IndexedStack`, sans poussée de route.

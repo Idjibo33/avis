@@ -1,3 +1,4 @@
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/header_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -42,5 +43,23 @@ void main() {
     final Text texte = tester.widget<Text>(find.text(nom));
     expect(texte.maxLines, 1);
     expect(texte.overflow, TextOverflow.ellipsis);
+  });
+
+  testWidgets('l en-tête respire avec un padding de 16 dp', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: HeaderCardWidget(nom: 'Joueur', date: '2026-10-19'),
+        ),
+      ),
+    );
+
+    final Padding marge = tester.widgetList<Padding>(
+      find.descendant(
+        of: find.byType(HeaderCardWidget),
+        matching: find.byType(Padding),
+      ),
+    ).first;
+    expect(marge.padding, const EdgeInsets.all(espaceLg));
   });
 }

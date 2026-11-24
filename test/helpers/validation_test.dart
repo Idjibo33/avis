@@ -34,4 +34,29 @@ void main() {
     );
     expect(erreurValidationElevation('joueur_1', '12345678'), isNull);
   });
+
+  test('espaces seuls : champs de duel considérés comme vides', () {
+    expect(validateIdeasDuel('   ', 'Option A', 'Option B'), isFalse);
+    expect(validateImagesDuel('   ', XFile('a.jpg'), XFile('b.jpg')), isFalse);
+    expect(champsIdeasManquants('  ', 'Option A', '  '), <ChampFormulaire>{
+      ChampFormulaire.question,
+      ChampFormulaire.optionB,
+    });
+    expect(
+      champsImagesManquants('Question', null, XFile('b.jpg')),
+      <ChampFormulaire>{ChampFormulaire.optionA},
+    );
+  });
+
+  test('les champs valides ne remontent aucune erreur', () {
+    expect(
+      champsIdeasManquants(' Question ', ' Option A ', ' Option B '),
+      isEmpty,
+    );
+    expect(
+      champsImagesManquants(' Question ', XFile('a.jpg'), XFile('b.jpg')),
+      isEmpty,
+    );
+    expect(erreurPseudoElevation('  joueur_1  '), isNull);
+  });
 }

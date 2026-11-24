@@ -23,6 +23,34 @@ Définis dans `lib/constants.dart`, appliqués dans `lib/theme.dart` :
 - Espacements 4/8/12/16/24 ; rayons concentriques carte 24 / contenu 16 / champ 12.
 - Une seule famille de police (Inter) remplace les deux polices précédentes.
 
+## Identité visuelle : une seule marque
+
+- Le `Logo` (`lib/widgets/logo.dart`) est la source de vérité : disque noir,
+  couches blanches (`layer-group`) et point teal cerclé de blanc en haut à
+  droite. Le point est **entièrement contenu** dans le diamètre du disque :
+  plus de chevauchement ni de coin coupé dans l'app bar.
+- Sur le feed, la marque est en haut à gauche, suivie du mot « avis » dans une
+  barre de 72 dp (disque de 36 dp). Elle n'est plus centrée ni serrée dans une
+  barre de 56 dp.
+- Les icônes Android et web sont générées depuis cette même géométrie par
+  `python3 tool/generate_app_icons.py` : mipmaps 48→192, `Icon-192/512`,
+  variantes maskable (disque réduit à 60 % pour la zone sûre) et favicon.
+  Aucune icône launcher par défaut n'est conservée.
+
+## En-têtes, dates et formulaires
+
+- La date d'un duel est formatée en `19 oct. 2026` (mois en toutes lettres),
+  ou en `Aujourd'hui` / `Hier` / `il y a N jours` pour la semaine courante.
+  Le tooltip donne la date et l'heure exactes (`formatDateComplete`).
+- Le profil est une suite de surfaces lisibles : en-tête carte avec nom sur
+  deux lignes maximum, statistiques avec icônes teal, puis un titre de section
+  « Mes duels » avant la grille. Le titre de la barre reste « Mon profil » :
+  le nom n'est plus lu deux fois.
+- Les deux formulaires de création partagent `FormActionBarWidget` : bouton
+  « Publier » ancré en bas, séparé par un trait, décalé de la navigation
+  gestuelle par le `SafeArea` de `NewPostScreen` et toujours au-dessus du
+  clavier pendant la saisie.
+
 ## Flux d'authentification : invité par défaut
 
 - L'application démarre en **invité** : `AuthGate` affiche directement le feed
@@ -30,8 +58,9 @@ Définis dans `lib/constants.dart`, appliqués dans `lib/theme.dart` :
   d'écran de connexion au lancement.
 - L'élévation se fait dans une **feuille modale** (`AuthenticationScreen`)
   au-dessus du feed, au premier acte d'écriture ou d'ouverture du formulaire :
-  vote, publication, « Faire un post ». La page de profil est en lecture seule.
-  Le feed reste monté derrière ; la feuille se ferme en cas de succès.
+  vote, publication, « + » de la barre basse. La page de profil est en lecture
+  seule (hors déconnexion). Le feed reste monté derrière ; la feuille se ferme
+  en cas de succès.
 - `demanderElevation(context, action: ...)` est la porte unique : le vote n'est
   retiré du feed qu'après l'écriture confirmée (pas d'ajout optimiste dans
   `interactedDuals`) et les formulaires ne vident leurs champs qu'après une
@@ -43,7 +72,33 @@ Définis dans `lib/constants.dart`, appliqués dans `lib/theme.dart` :
   les saisies restent dans la feuille, le message d'erreur est affiché sous les
   champs et le réessai est possible. Le flux d'authentification est l'unique
   source de vérité : plus de navigation ni de `ValueKey` de retry pour l'auth.
-- « Déconnecter » dans le drawer repasse en invité sans quitter le feed.
+- « Déconnecter » est une `IconButton` dans le trailing de l'app bar du profil :
+  l'action reste accessible sans défiler les duels, et l'app repasse en invité
+  sans écran de connexion.
+
+## Navigation et tour des duels
+
+- La barre basse remplace le drawer : Feed à gauche, Profil à droite. Le rendu
+  est un `CupertinoTabBar` dont les couleurs viennent de `lib/constants.dart`
+  (fond blanc, actif teal, inactif gris, bordure neutre). Ses deux coins
+  supérieurs sont arrondis au rayon des cartes (`rayonCarte`) et le trait est
+  tracé sur la courbe. Le « + » teal est un `FloatingActionButton` docké au centre
+  (`FloatingActionButtonLocation.centerDocked`) : c'est une action de création,
+  pas un onglet, et elle passe par `demanderElevation`.
+- Un unique `MainNavigationShell` porte le `Scaffold`, la barre et le FAB. Les
+  deux onglets vivent dans un `IndexedStack` : sélectionner Feed ou Profil ne
+  pousse aucune route et ne reconstruit pas l'autre page. Résultat, formulaire
+  et authentification restent de vraies routes et n'héritent pas de la barre.
+- La carte du feed et l'écran résultat partagent la même gouttière : 24 dp
+  autour de la carte, 16 dp pour son contenu interne (en-tête, question, options,
+  boutons de vote).`
+- « Passer ce duel » est une ligne discrète sous les deux boutons de vote. C'est
+  une action locale : aucun vote écrit, aucune élévation, aucun snackbar. Un
+  invité peut passer.
+- Le duel ignoré quitte le tour courant (`skippedIds`) puis revient dès que les
+  autres duels ont été vus. Le retour est silencieux : ni message, ni compteur,
+  ni état transitoire. Le libellé « Vous avez voté sur tous les duels » ne
+  s'affiche que si la file est vide et qu'aucun duel n'a été ignoré.
 - `AuthSessionStatus.failed` est un état explicite. S'il survient pendant
   l'initialisation (aucun identifiant d'invité), un message et un bouton
   « Réessayer » remplacent le feed ; s'il conserve un `authUserId`, l'erreur
@@ -53,9 +108,13 @@ Définis dans `lib/constants.dart`, appliqués dans `lib/theme.dart` :
 
 ## Non-objectifs de l'itération design
 
-- Aucun nouveau package, aucune modification des modèles, services de données
-  ou de la logique de vote dans cette itération (la refonte backend est décrite
-  dans [`docs/serverpod.md`](serverpod.md)).
+- Aucun package UI ajouté : la barre utilise le `CupertinoTabBar` et le
+  `FloatingActionButton` fournis par Flutter. Aucune modification des modèles,
+  des services de données ni du contrat backend dans cette itération
+  (la refonte backend est décrite dans
+  [`docs/serverpod.md`](serverpod.md)). Les ajustements de la logique
+  de vote restent côté vue : ils ne font que rendre explicite le succès déjà
+  requis par la porte d'élévation.
 - Les textes exacts utilisés par les tests non-auth (états d'erreur,
   'Réessayer', 'Nombre total de votes') et l'ordre des champs de formulaire
   sont conservés.

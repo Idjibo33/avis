@@ -112,10 +112,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    // Le nom vit désormais dans la carte d'en-tête (le titre de l'app bar
+    // reste « Mon profil ») et peut occuper deux lignes avant d'être tronqué.
     final Text titre = tester.widget<Text>(
       find.text('UnPseudoExtremementLongQuiDoitEtreTronqueDansLaBarre').first,
     );
-    expect(titre.maxLines, 1);
+    expect(titre.maxLines, 2);
     expect(titre.overflow, TextOverflow.ellipsis);
   });
 
@@ -152,6 +154,53 @@ void main() {
     ]);
     await tester.pumpAndSettle();
 
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('feed : snackbar de vote sur 320x640 sans débordement', (
+    tester,
+  ) async {
+    await setSmallScreen(tester, const Size(320, 640));
+    final FakePostsTableServices posts = FakePostsTableServices();
+    addTearDown(posts.close);
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => PostTableProider(
+              postsTableServices: posts,
+              storageServices: FakeStorageServices(),
+            ),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => InteractionsServicesProvider(
+              interactions: FakeInteractionsServices(),
+            ),
+          ),
+          ChangeNotifierProvider.value(value: authConnecte()),
+          ChangeNotifierProvider.value(value: AuthElevationController()),
+        ],
+        child: const MaterialApp(home: FeedScreen()),
+      ),
+    );
+    await posts.emit([buildPost()]);
+    await tester.pumpAndSettle();
+
+    // La carte défiled avec la barre basse : on amène la cible dans la zone
+    // visible avant de voter, comme le ferait un utilisateur sur 320 px.
+    await tester.scrollUntilVisible(
+      find.byTooltip('Voter pour A'),
+      120,
+      scrollable: find.descendant(
+        of: find.byType(SingleChildScrollView).first,
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Voter pour A'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Vote enregistré'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

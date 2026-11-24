@@ -25,7 +25,11 @@ class ImagePostContentWidget extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               height: heights,
-              child: ImageWidget(url: optionAUrl, height: heights),
+              child: ImageWidget(
+                url: optionAUrl,
+                height: heights,
+                semanticLabel: 'Image de l’option A',
+              ),
             ),
           ),
         ),
@@ -36,7 +40,11 @@ class ImagePostContentWidget extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               height: heights,
-              child: ImageWidget(url: optionBUrl, height: heights),
+              child: ImageWidget(
+                url: optionBUrl,
+                height: heights,
+                semanticLabel: 'Image de l’option B',
+              ),
             ),
           ),
         ),

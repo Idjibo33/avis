@@ -20,9 +20,15 @@ Avis est une application interactive conçue pour faciliter la prise de décisio
 
 ## Aperçu
 
-| Accueil | Drawer | Auth | Auth | Profil | Résultat |
-|---|---|---|---|---|---|
-| <img src="assets/screenshots/accueil.png" width="150" alt="Accueil"> | <img src="assets/screenshots/drawer.png" width="150" alt="Drawer"> | <img src="assets/screenshots/auth1.png" width="150" alt="Authentification"> | <img src="assets/screenshots/auth2.png" width="150" alt="Inscription"> | <img src="assets/screenshots/profil.png" width="150" alt="Profil"> | <img src="assets/screenshots/resultat_duel.png" width="150" alt="Résultat d'un duel"> |
+Captures du nouvel UI sur device (données de démonstration locales) :
+
+| Feed | Tous les duels votés | Nouveau duel — Idées | Nouveau duel — Photos | Résultat |
+|---|---|---|---|---|
+| <img src="assets/screenshots/accueil.png" width="150" alt="Feed"> | <img src="assets/screenshots/feed_tous_votes.png" width="150" alt="Tous les duels votés"> | <img src="assets/screenshots/nouveau_duel_idees.png" width="150" alt="Formulaire texte"> | <img src="assets/screenshots/nouveau_duel_photos.png" width="150" alt="Formulaire images"> | <img src="assets/screenshots/resultat_duel.png" width="150" alt="Résultat d'un duel"> |
+
+| Élévation | Élévation — saisie | Profil — déconnexion |
+|---|---|---|
+| <img src="assets/screenshots/auth1.png" width="150" alt="Feuille d'élévation"> | <img src="assets/screenshots/auth2.png" width="150" alt="Formulaire d'élévation rempli"> | <img src="assets/screenshots/profil.png" width="150" alt="Profil"> |
 
 ## Stack technique
 
@@ -33,6 +39,7 @@ Avis est une application interactive conçue pour faciliter la prise de décisio
 | Gestion d'état | Provider (ChangeNotifier) + états explicites (`lib/State/`) |
 | UI | `flutter_card_swiper`, `google_fonts`, `font_awesome_flutter`, `gap` |
 | Configuration | `SERVERPOD_URL` injectée au build via `--dart-define` (défaut `http://localhost:8080`) ; secrets serveur dans `passwords.yaml` (jamais commité) |
+| Identité de l'app | `io.github.idjibo33.avis` : `applicationId` Android, `namespace` Kotlin et `PRODUCT_BUNDLE_IDENTIFIER` iOS |
 
 ## Architecture du projet
 
@@ -68,8 +75,19 @@ est élevé en conservant le même identifiant.
 Au premier acte d'écriture (vote, publication, ouverture du formulaire),
 `demanderElevation(context, action: ...)` ouvre la feuille `AuthenticationScreen`
 si l'utilisateur est invité. Un échec annule l'action et conserve les saisies ;
-un succès ferme la feuille et rejoue l'action une seule fois. La déconnexion du
-drawer repasse en invité sans quitter le feed.
+un succès ferme la feuille et rejoue l'action une seule fois. La déconnexion se
+fait depuis l'icône du trailing de l'app bar du profil et repasse en invité sans
+écran de connexion.
+
+`MainNavigationShell` porte un seul `Scaffold` pour les deux onglets principaux :
+un `IndexedStack` garde le feed et le profil montés, et le `CupertinoTabBar`
+aux couleurs du projet (Feed à gauche, Profil à droite, coins supérieurs
+arrondis) change d'index sans `Navigator.push`. Le « + » teal est un
+`FloatingActionButton` docké au centre de cette barre (même porte d'élévation),
+pas un onglet. Le formulaire et le résultat restent de vraies routes poussées et
+n'héritent pas de la barre. Sous chaque duel,
+« Passer ce duel » retire la carte du tour courant sans vote écrit : elle revient
+dès que les autres duels ont été vus, sans message ni compteur.
 
 ## Base de données (Serverpod)
 

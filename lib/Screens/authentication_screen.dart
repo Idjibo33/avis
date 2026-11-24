@@ -1,3 +1,4 @@
+import 'package:avis/Helpers/responsiveness.dart';
 import 'package:avis/constants.dart';
 import 'package:avis/widgets/connexion_widget.dart';
 import 'package:avis/widgets/corps_text_widget.dart';
@@ -23,9 +24,23 @@ class AuthenticationScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(rayonCarte)),
       ),
-      builder: (BuildContext context) => const Padding(
-        padding: EdgeInsets.fromLTRB(espaceLg, espaceMd, espaceLg, espaceXl),
-        child: AuthenticationScreen(),
+      // Le clavier ne doit pas recouvrir « Créer mon compte » ; la largeur est
+      // bornée comme le reste de l'application (Responsiveness.maxWidth).
+      builder: (BuildContext context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: const Responsiveness(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              espaceLg,
+              espaceMd,
+              espaceLg,
+              espaceXl,
+            ),
+            child: AuthenticationScreen(),
+          ),
+        ),
       ),
     );
     return resultat ?? false;

@@ -1,6 +1,6 @@
 {
-    "name": "avis",
-    "short_name": "avis",
+    "name": "Avis",
+    "short_name": "Avis",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",

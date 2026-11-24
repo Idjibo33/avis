@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:avis/Providers/auth_services_providers.dart';
-import 'package:avis/Screens/feed_screen.dart';
 import 'package:avis/State/auth_gate_state.dart';
 import 'package:avis/constants.dart';
 import 'package:avis/widgets/corps_text_widget.dart';
+import 'package:avis/widgets/main_navigation_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -49,7 +49,7 @@ class _AuthGateState extends State<AuthGate> {
               body: Center(child: CircularProgressIndicator.adaptive()),
             ),
             AuthGateStatus.guest ||
-            AuthGateStatus.authenticated => const FeedScreen(),
+            AuthGateStatus.authenticated => const MainNavigationShell(),
             AuthGateStatus.failed => Scaffold(
               body: SafeArea(
                 child: Center(

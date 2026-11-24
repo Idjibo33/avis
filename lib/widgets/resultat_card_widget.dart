@@ -14,8 +14,11 @@ class ResultatCardWidget extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Card(
+        // Même gouttière que la question et les chiffres : les bords du
+        // résultat restent alignés sur toute la page.
+        margin: const EdgeInsets.symmetric(horizontal: espaceXl),
         child: Padding(
-          padding: const EdgeInsets.all(espaceSm),
+          padding: const EdgeInsets.all(espaceLg),
           child: isTextPost
               ? TextPostContentWidget(
                   heights: 250,

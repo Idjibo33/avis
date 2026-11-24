@@ -45,6 +45,13 @@ ThemeData appTheme() {
     fontSize: 14,
     color: blanc,
   );
+  // TextButton laisse foregroundColor piloter tous les états, disabled inclus.
+  final TextStyle styleBoutonSansCouleur = GoogleFonts.inter(
+    fontSize: 14,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.2,
+    height: 1.25,
+  );
 
   return ThemeData(
     useMaterial3: true,
@@ -108,7 +115,7 @@ ThemeData appTheme() {
       style: TextButton.styleFrom(
         foregroundColor: teal,
         minimumSize: const Size(48, 48),
-        textStyle: styleBouton,
+        textStyle: styleBoutonSansCouleur,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(

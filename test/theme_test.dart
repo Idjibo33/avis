@@ -33,4 +33,29 @@ void main() {
     expect(theme.scaffoldBackgroundColor, blanc);
     expect(theme.cardTheme.elevation, 0);
   });
+
+  test('textButtonTheme : foregroundColor pilote tous les états du texte', () {
+    final ButtonStyle style = appTheme().textButtonTheme.style!;
+
+    final Color? foreground = style.foregroundColor?.resolve(const {});
+    final Color? couleurTexte = style.textStyle?.resolve(const {})?.color;
+
+    expect(foreground, teal);
+    // Aucune couleur figée dans textStyle : le disabled suit le thème.
+    expect(couleurTexte, isNull);
+  });
+
+  test(
+    'textChiffresStyle : chiffres tabulaires sans altérer le style titre',
+    () {
+      expect(
+        textChiffresStyle.fontFeatures?.map((feature) => feature.feature),
+        contains('tnum'),
+      );
+      expect(textChiffresStyle.fontSize, textTitreStyle.fontSize);
+      expect(textChiffresStyle.fontWeight, textTitreStyle.fontWeight);
+      expect(textChiffresStyle.color, textTitreStyle.color);
+      expect(textChiffresStyle.letterSpacing, textTitreStyle.letterSpacing);
+    },
+  );
 }

@@ -29,10 +29,66 @@ void main() {
     expect(state.postsVisibles.map((post) => post.id), [2]);
   });
 
-  test('tous les duels votés : vide', () {
+  test('aucun duel publié : vide', () {
+    final FeedViewState state = FeedViewState.from(
+      AsyncSnapshot.withData(ConnectionState.done, const <Post>[]),
+      const <int>{},
+    );
+
+    expect(state.status, FeedStatus.empty);
+  });
+
+  test('tous les duels votés : état explicite distinct du vide', () {
     final FeedViewState state = FeedViewState.from(
       AsyncSnapshot.withData(ConnectionState.done, [buildPost(id: 1)]),
       const <int>{1},
+    );
+
+    expect(state.status, FeedStatus.allVoted);
+    expect(state.postsVisibles, isEmpty);
+  });
+
+  test('un duel ignoré : retiré de la file courante', () {
+    final FeedViewState state = FeedViewState.from(
+      AsyncSnapshot.withData(ConnectionState.done, [
+        buildPost(id: 1),
+        buildPost(id: 2),
+      ]),
+      const <int>{},
+      skippedIds: const <int>{1},
+    );
+
+    expect(state.status, FeedStatus.ready);
+    expect(state.postsVisibles.map((post) => post.id), [2]);
+  });
+
+  test('tour terminé : le duel ignoré revient sans état intermédiaire', () {
+    final FeedViewState state = FeedViewState.from(
+      AsyncSnapshot.withData(ConnectionState.done, [buildPost(id: 1)]),
+      const <int>{},
+      skippedIds: const <int>{1},
+    );
+
+    expect(state.status, FeedStatus.ready);
+    expect(state.postsVisibles.map((post) => post.id), [1]);
+  });
+
+  test('duel ignoré puis voté : aucun retour fantôme', () {
+    final FeedViewState state = FeedViewState.from(
+      AsyncSnapshot.withData(ConnectionState.done, [buildPost(id: 1)]),
+      const <int>{1},
+      skippedIds: const <int>{1},
+    );
+
+    expect(state.status, FeedStatus.allVoted);
+    expect(state.postsVisibles, isEmpty);
+  });
+
+  test('flux vide avec un ignoré : reste vide', () {
+    final FeedViewState state = FeedViewState.from(
+      AsyncSnapshot.withData(ConnectionState.done, const <Post>[]),
+      const <int>{},
+      skippedIds: const <int>{1},
     );
 
     expect(state.status, FeedStatus.empty);

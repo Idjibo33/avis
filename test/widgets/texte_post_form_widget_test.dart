@@ -1,8 +1,11 @@
 import 'package:avis/Helpers/snackbar.dart';
+import 'package:avis/Models/post.dart';
 import 'package:avis/Providers/auth_services_providers.dart';
 import 'package:avis/Providers/post_table_proider.dart';
 import 'package:avis/Screens/authentication_screen.dart';
 import 'package:avis/State/auth_gate_state.dart';
+import 'package:avis/constants.dart';
+import 'package:avis/widgets/button_principale_widget.dart';
 import 'package:avis/widgets/texte_post_form_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,14 +14,26 @@ import 'package:provider/provider.dart';
 
 import '../fixtures/fakes.dart';
 
+class PostsEnEchec extends FakePostsTableServices {
+  @override
+  Future addData(Post item) async {
+    throw Exception('refus serveur');
+  }
+}
+
 void main() {
   setUpAll(() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
   Future<(FakePostsTableServices, FakeAuthRepository, AuthElevationController)>
-  pumpForm(WidgetTester tester, {required bool authentifie}) async {
-    final FakePostsTableServices posts = FakePostsTableServices();
+  pumpForm(
+    WidgetTester tester, {
+    required bool authentifie,
+    FakePostsTableServices? postsServices,
+  }) async {
+    final FakePostsTableServices posts =
+        postsServices ?? FakePostsTableServices();
     final FakeAuthRepository repository = FakeAuthRepository();
     final AuthElevationController elevation = AuthElevationController();
     addTearDown(posts.close);
@@ -63,6 +78,46 @@ void main() {
     await tester.enterText(find.byType(TextField).at(1), 'Option A');
     await tester.enterText(find.byType(TextField).at(2), 'Option B');
   }
+
+  testWidgets('Publier reste visible à 320x500 sans défilement', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 500);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await pumpForm(tester, authentifie: true);
+
+    expect(find.byType(ButtonPrincipaleWidget), findsOneWidget);
+    final Rect bouton = tester.getRect(find.byType(ButtonPrincipaleWidget));
+    expect(bouton.bottom, lessThanOrEqualTo(500));
+    expect(bouton.top, greaterThanOrEqualTo(0));
+  });
+
+  testWidgets('champs du duel : next, next, done qui publie', (tester) async {
+    final (FakePostsTableServices posts, _, _) = await pumpForm(
+      tester,
+      authentifie: true,
+    );
+
+    final List<TextField> champs = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
+    expect(
+      champs.map((TextField champ) => champ.textInputAction).toList(),
+      <TextInputAction>[
+        TextInputAction.next,
+        TextInputAction.next,
+        TextInputAction.done,
+      ],
+    );
+
+    await saisirDuel(tester);
+    await tester.tap(find.byType(TextField).at(2));
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(posts.added, hasLength(1));
+  });
 
   testWidgets('la saisie survit à un rebuild du parent', (tester) async {
     final FakePostsTableServices posts = FakePostsTableServices();
@@ -111,6 +166,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Toutes les cases sont obligatoires'), findsOneWidget);
+    expect(find.text('Ce champ est obligatoire.'), findsNWidgets(3));
     expect(posts.added, isEmpty);
   });
 
@@ -135,6 +191,28 @@ void main() {
     expect(
       tester.widget<TextField>(find.byType(TextField).at(1)).controller!.text,
       isEmpty,
+    );
+  });
+
+  testWidgets('échec de publication : la saisie est conservée', (tester) async {
+    final (FakePostsTableServices posts, _, _) = await pumpForm(
+      tester,
+      authentifie: true,
+      postsServices: PostsEnEchec(),
+    );
+
+    await saisirDuel(tester);
+    await tester.tap(find.text('Publier'));
+    await tester.pumpAndSettle();
+
+    expect(posts.added, isEmpty);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(0)).controller!.text,
+      'Quelle est la meilleure option ?',
+    );
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(1)).controller!.text,
+      'Option A',
     );
   });
 
@@ -246,5 +324,17 @@ void main() {
       tester.widget<TextField>(find.byType(TextField).at(0)).controller!.text,
       isEmpty,
     );
+  });
+
+  testWidgets('le formulaire texte utilise la gouttière de l app', (tester) async {
+    await pumpForm(tester, authentifie: true);
+
+    final Padding marge = tester.widgetList<Padding>(
+      find.descendant(
+        of: find.byType(TextePostFormWidget),
+        matching: find.byType(Padding),
+      ),
+    ).first;
+    expect(marge.padding, const EdgeInsets.symmetric(horizontal: espaceXl));
   });
 }

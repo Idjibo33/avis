@@ -13,7 +13,19 @@ class CardWidget extends StatelessWidget {
   final Post post;
   final VoidCallback? onVoteA;
   final VoidCallback? onVoteB;
-  const CardWidget({super.key, required this.post, this.onVoteA, this.onVoteB});
+  final VoidCallback? onSkip;
+
+  /// Transmis au feed pour retirer les cibles de vote d'un duel créé par
+  /// l'utilisateur courant.
+  final bool estAuteur;
+  const CardWidget({
+    super.key,
+    required this.post,
+    this.onVoteA,
+    this.onVoteB,
+    this.onSkip,
+    this.estAuteur = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +54,10 @@ class CardWidget extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(espaceSm),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: espaceLg,
+                  vertical: espaceSm,
+                ),
                 child: isTextPost
                     ? TextPostContentWidget(
                         heights: 250,
@@ -56,7 +71,15 @@ class CardWidget extends StatelessWidget {
                       ),
               ),
               const Gap(espaceSm),
-              VoteDescriptionWidget(onVoteA: onVoteA, onVoteB: onVoteB),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: espaceLg),
+                child: VoteDescriptionWidget(
+                  onVoteA: onVoteA,
+                  onVoteB: onVoteB,
+                  onSkip: onSkip,
+                  estAuteur: estAuteur,
+                ),
+              ),
               const Gap(espaceSm),
               PostReactionsWidget(postId: post.id ?? 0),
               const Gap(espaceLg),

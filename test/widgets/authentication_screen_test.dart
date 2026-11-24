@@ -225,6 +225,34 @@ void main() {
     expect(find.byType(AuthenticationScreen), findsNothing);
   });
 
+  testWidgets('la feuille reste au-dessus du clavier et borne sa largeur', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 240);
+    addTearDown(tester.view.reset);
+    addTearDown(tester.view.resetViewInsets);
+    final (_, _, BuildContext context) = await pumpHote(tester);
+
+    final Future<bool> ouverture = AuthenticationScreen.ouvrir(context);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getRect(find.byType(AuthenticationScreen)).width,
+      lessThanOrEqualTo(600),
+    );
+    expect(
+      tester.getRect(find.text('Créer mon compte')).bottom,
+      lessThanOrEqualTo(900 - 240),
+    );
+    expect(find.text('Créez votre compte'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Fermer'));
+    await tester.pumpAndSettle();
+    expect(await ouverture, isFalse);
+  });
+
   testWidgets('échec : invité, saisies conservées, réessai possible', (
     tester,
   ) async {

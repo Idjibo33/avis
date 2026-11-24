@@ -1,5 +1,6 @@
 import 'package:avis/Models/interaction.dart';
 import 'package:avis/Providers/interactions_services_provider.dart';
+import 'package:avis/constants.dart';
 import 'package:avis/widgets/duel_resultat_total.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -65,5 +66,33 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('3'), findsOneWidget);
+  });
+
+  testWidgets('les totaux utilisent des chiffres tabulaires', (tester) async {
+    final FakeInteractionsServices services = FakeInteractionsServices()
+      ..interactions = [
+        Interaction(choix: 'A', postId: 1),
+        Interaction(choix: 'B', postId: 1),
+      ];
+
+    await pumpTotal(tester, services);
+
+    final Text nombre = tester.widget<Text>(find.text('2'));
+    expect(
+      nombre.style?.fontFeatures?.map((feature) => feature.feature),
+      contains('tnum'),
+    );
+    expect(nombre.style?.fontSize, 25);
+    expect(nombre.style?.color, noir);
+    expect(find.text('Indisponible'), findsNothing);
+  });
+
+  testWidgets('Indisponible garde son libellé et sa taille', (tester) async {
+    await pumpTotal(tester, InteractionsEnEchec());
+
+    final Text indisponible = tester.widget<Text>(find.text('Indisponible'));
+    expect(indisponible.style?.fontSize, 25);
+    expect(indisponible.style?.color, noir);
+    expect(find.text('0'), findsNothing);
   });
 }

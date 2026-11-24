@@ -22,7 +22,7 @@ class ResultatDuelScreen extends StatelessWidget {
             children: [
               const Gap(espaceXl),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: espaceLg),
+                padding: const EdgeInsets.symmetric(horizontal: espaceXl),
                 child: TitreTextWidget(
                   texte: post.question,
                   align: TextAlign.center,

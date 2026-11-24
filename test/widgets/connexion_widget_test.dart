@@ -37,6 +37,54 @@ void main() {
     expect(find.text('Email'), findsNothing);
   });
 
+  testWidgets('navigation clavier : next puis done qui soumet', (tester) async {
+    final FakeAuthRepository repository = await pumpFormulaire(tester);
+
+    final List<TextField> champs = tester
+        .widgetList<TextField>(find.byType(TextField))
+        .toList();
+    expect(champs[0].textInputAction, TextInputAction.next);
+    expect(champs[0].textCapitalization, TextCapitalization.none);
+    expect(champs[1].textInputAction, TextInputAction.done);
+
+    await tester.enterText(find.byType(TextField).at(0), 'joueur_1');
+    await tester.enterText(find.byType(TextField).at(1), 'motdepasse1');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+
+    expect(repository.elevateCalls, 1);
+  });
+
+  testWidgets('le mot de passe peut être affiché puis masqué', (tester) async {
+    await pumpFormulaire(tester);
+    final semantics = tester.ensureSemantics();
+
+    expect(find.byTooltip('Afficher le mot de passe'), findsOneWidget);
+    expect(find.bySemanticsLabel('Afficher le mot de passe'), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(1)).obscureText,
+      isTrue,
+    );
+
+    await tester.tap(find.byTooltip('Afficher le mot de passe'));
+    await tester.pump();
+
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(1)).obscureText,
+      isFalse,
+    );
+    expect(find.byTooltip('Masquer le mot de passe'), findsOneWidget);
+    expect(find.bySemanticsLabel('Masquer le mot de passe'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Masquer le mot de passe'));
+    await tester.pump();
+    expect(
+      tester.widget<TextField>(find.byType(TextField).at(1)).obscureText,
+      isTrue,
+    );
+    semantics.dispose();
+  });
+
   testWidgets('pseudo inférieur à 3 caractères : message français', (
     tester,
   ) async {

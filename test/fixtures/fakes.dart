@@ -55,7 +55,9 @@ class FakePostsTableServices implements PostsTableServices {
 
   @override
   Stream<PostWithCount> getUserPosts(String userId) =>
-      Stream.value(PostWithCount(posts: const [], count: 0));
+      Stream<PostWithCount>.value(
+        PostWithCount(posts: const [], count: 0),
+      ).asBroadcastStream();
 
   Future<void> emit(List<Post> posts) async {
     controller.add(posts);
@@ -204,6 +206,7 @@ Post buildPost({
   int id = 1,
   String question = 'Question du duel',
   String type = 'text',
+  String? user,
   String nom = 'Adamou',
   String createdAt = '2026-10-19',
   String optionAText = 'Option A',
@@ -214,6 +217,7 @@ Post buildPost({
     created_at: createdAt,
     question: question,
     type: type,
+    user: user,
     nom: nom,
     option_a_text: type == 'text' ? optionAText : null,
     option_b_text: type == 'text' ? optionBText : null,
